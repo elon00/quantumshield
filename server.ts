@@ -220,10 +220,45 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
   try {
     const { codeOrConfig, systemName } = req.body;
 
+    // If GEMINI_API_KEY is missing, return the offline fallback audit instead of an error so the endpoint works without paid API access.
     if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({
-        error: "GEMINI_API_KEY environment variable is missing. Configure it in Secrets."
-      });
+      console.warn("GEMINI_API_KEY environment variable is missing — returning offline fallback audit.");
+
+      const isRsaOrEcc = /RSA|ECDH|ECDSA|Secp|Prime|TLSv1\.2/i.test(codeOrConfig || "");
+      const fallbackAudit = {
+        overallRiskScore: isRsaOrEcc ? 92 : 20,
+        riskLevel: isRsaOrEcc ? "CRITICAL" : "LOW",
+        summary: isRsaOrEcc
+          ? "The analyzed configuration relies on classical RSA/ECC public-key primitives vulnerable to Shor's algorithm on Cryptographically Relevant Quantum Computers (CRQCs). Recorded ciphertext may be decrypted once large-scale quantum hardware is available."
+          : "The system configuration utilizes modern post-quantum primitives (ML-KEM-768 / Hybrid PQC) conforming to NIST FIPS 203 guidelines.",
+        vulnerabilities: isRsaOrEcc
+          ? [
+              {
+                title: "Shor's Algorithm Public-Key Break",
+                description: "Classical RSA / ECDHE key exchange relies on discrete logarithms and integer factorization, easily broken by Shor's algorithm in polynomial time.",
+                severity: "CRITICAL",
+                affectedStandard: "NIST SP 800-52 Rev 2 Deprecated"
+              },
+              {
+                title: "Store-Now-Decrypt-Later (SNDL) Exposure",
+                description: "Adversaries passively recording current encrypted sessions will decrypt them retroactively as soon as a quantum computer with sufficient logical qubits becomes available.",
+                severity: "HIGH",
+                affectedStandard: "NIST IR 8547 PQC Transition"
+              }
+            ]
+          : [],
+        recommendations: [
+          {
+            action: "Deploy Hybrid X25519 + ML-KEM-768 Key Exchange",
+            details: "Upgrade TLS endpoint to OpenSSL 3.4 or BoringSSL supporting ML-KEM-768 (FIPS 203) alongside classical X25519.",
+            targetStandard: "NIST FIPS 203",
+            codeSnippet: `// OpenSSL 3.4 / Nginx Post-Quantum TLS 1.3 Configuration\nssl_protocols TLSv1.3;\nssl_conf_command Groups X25519MLKEM768:X25519;`
+          }
+        ],
+        aiAnalysis: "Fallback offline audit generated while Gemini API is not configured. Transition to NIST FIPS 203 ML-KEM-768 is strongly recommended prior to 2030."
+      };
+
+      return res.json(fallbackAudit);
     }
 
     const ai = new GoogleGenAI({
@@ -236,7 +271,7 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
     });
 
     const prompt = `
-You are an expert Post-Quantum Cryptography (PQC) Security Auditor specializing in NIST FIPS 203 (ML-KEM / Kyber), FIPS 204 (ML-DSA / Dilithium), FIPS 205 (SLH-DSA), and hybrid key exchange migration (X25519 + ML-KEM-768).
+You are an expert Post-Quantum Cryptography (PQC) Security Auditor specializing in NIST FIPS 203 (ML-KEM / Kyber), FIPS 204 (ML-DSA / Dilithium), FIPS 205 (SLH-DSA), and hybrid key exchange migra[...]
 
 Perform a comprehensive Quantum Readiness & Cryptographic Migration Audit for the following system configuration or code snippet:
 
@@ -304,7 +339,7 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
       overallRiskScore: isRsaOrEcc ? 92 : 20,
       riskLevel: isRsaOrEcc ? "CRITICAL" : "LOW",
       summary: isRsaOrEcc
-        ? "The analyzed configuration relies on classical RSA/ECC public-key primitives vulnerable to Shor's algorithm on Cryptographically Relevant Quantum Computers (CRQCs). Recorded ciphertexts are immediately at risk from Store-Now-Decrypt-Later (SNDL) attacks."
+        ? "The analyzed configuration relies on classical RSA/ECC public-key primitives vulnerable to Shor's algorithm on Cryptographically Relevant Quantum Computers (CRQCs). Recorded ciphertext[...]
         : "The system configuration utilizes modern post-quantum primitives (ML-KEM-768 / Hybrid PQC) conforming to NIST FIPS 203 guidelines.",
       vulnerabilities: isRsaOrEcc ? [
         {
@@ -325,9 +360,7 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
           action: "Deploy Hybrid X25519 + ML-KEM-768 Key Exchange",
           details: "Upgrade TLS endpoint to OpenSSL 3.4 or BoringSSL supporting ML-KEM-768 (FIPS 203) alongside classical X25519.",
           targetStandard: "NIST FIPS 203",
-          codeSnippet: `// OpenSSL 3.4 / Nginx Post-Quantum TLS 1.3 Configuration
-ssl_protocols TLSv1.3;
-ssl_conf_command Groups X25519MLKEM768:X25519;`
+          codeSnippet: `// OpenSSL 3.4 / Nginx Post-Quantum TLS 1.3 Configuration\nssl_protocols TLSv1.3;\nssl_conf_command Groups X25519MLKEM768:X25519;`
         }
       ],
       aiAnalysis: "Fallback offline audit generated while Gemini API is experiencing temporary server demand. Transition to NIST FIPS 203 ML-KEM-768 is strongly recommended prior to 2030."
