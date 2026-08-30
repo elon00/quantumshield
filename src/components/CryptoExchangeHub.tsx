@@ -72,7 +72,7 @@ export interface TradeOrder {
   priceUsd: number;
   totalUsd: number;
   exchange: 'Binance (CEX)' | 'Uniswap v3 (DEX)' | 'Coinbase Prime' | 'Curve PQC Pool';
-  pqcSignatureStatus: 'SIMULATION_ONLY — NOT ML-DSA SIGNED' | 'SECP256K1 VULNERABLE' | 'VERIFIED';
+  pqcSignatureStatus: 'SIMULATION_ONLY — NOT ML-DSA SIGNED' | 'SIMULATION_ONLY — NO ML-DSA IMPLEMENTATION' | 'SIMULATION_ONLY — NO ON-CHAIN SIGNATURE';
   txHash: string;
 }
 
