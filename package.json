@@ -15,7 +15,7 @@
     "check:env": "node scripts/check-env.cjs",
     "check:config": "node scripts/check-config.cjs",
     "check:lock": "node scripts/check-lock.cjs",
-    "check:release": "npm run test",
+    "check:release": "npm run check:env && npm run check:config && npm run check:lock && npm run check:truth && npm run check:status && npm run lint && npm run build",
     "predeploy": "npm run check:release",
     "verify": "npm run check:release",
     "check:status": "node scripts/check-status.cjs"
