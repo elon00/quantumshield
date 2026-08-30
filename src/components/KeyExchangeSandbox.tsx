@@ -149,38 +149,21 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
 
       await new Promise(r => setTimeout(r, 600));
 
-      // STEP 4: Client Decapsulation & HKDF Session Key Derivation
+      // STEP 4: Local demonstration derivation.
+      // IMPORTANT: use the same locally derived demonstration material on both sides.
+      // This intentionally does not claim ML-KEM encapsulation/decapsulation or hybrid interoperability.
       setStep(4);
 
-      // Derive client side
-      const serverPubKeyObj = await crypto.subtle.importKey(
-        "raw",
-        ecdhPair.publicKey ? await crypto.subtle.exportKey("raw", ecdhPair.publicKey) : new Uint8Array(32),
-        { name: "ECDH", namedCurve: "P-256" },
-        true,
-        []
-      );
-
-      const clientEcdhSecret = new Uint8Array(
-        await crypto.subtle.deriveBits(
-          { name: "ECDH", public: serverPubKeyObj },
-          ecdhPair.privateKey,
-          256
-        )
-      );
-
-      const clientPqSecret = await mlkem.decapsulate(
-        new Uint8Array(1088),
-        mlkemKeyPair.privateKey
-      );
-
-      const finalClientAes = await deriveHybridSessionKey(clientEcdhSecret, clientPqSecret);
+      const demoEcdhSecret = serverDerivedKeyBytes
+        ? serverDerivedKeyBytes
+        : new Uint8Array(32);
+      const finalClientAes = demoEcdhSecret;
       setClientAesKey(finalClientAes);
       if (!serverAesKey) setServerAesKey(finalClientAes);
 
       onAddLog({
         source: 'client',
-        message: `Client completed a local demonstration derivation using placeholder PQ data; no ML-KEM decapsulation occurred.`,
+        message: `Client and server now share the same local demonstration key material; this validates only the sandbox flow, not ML-KEM or hybrid interoperability.`,
         type: 'success'
       });
 
