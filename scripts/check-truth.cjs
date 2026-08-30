@@ -5,7 +5,8 @@ const targets = [
   "server.ts",
   "src/App.tsx",
   "src/components/KeyExchangeSandbox.tsx",
-  "src/components/CryptoExchangeHub.tsx"
+  "src/components/CryptoExchangeHub.tsx",
+  "src/components/PaymentGateway.tsx"
 ];
 const forbidden = [
   /production[- ]verified ML-KEM/i,
@@ -20,7 +21,11 @@ const forbidden = [
   /quantumBits:\s*[1-9]/i,
   /100% quantum-safe/i,
   /ML-DSA-65 SIGNED/i,
-  /Successfully swapped .*PQC Protected/i
+  /Successfully swapped .*PQC Protected/i,
+  /ML-KEM-768 SIGNED/i,
+  /FDIC \+ PQC Vault Insured/i,
+  /NIST PQC Migration Reserve/i,
+  /successfully authorized and broadcast with NIST ML-KEM/i
 ];
 let failed = false;
 for (const file of targets) {
