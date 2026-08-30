@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "npm run lint && npm run build",
+    "test": "npm run check:truth && npm run lint && npm run build",
     "check:truth": "node scripts/check-truth.cjs"
   },
   "dependencies": {
