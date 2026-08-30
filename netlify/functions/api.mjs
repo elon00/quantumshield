@@ -87,8 +87,8 @@ app.get("/api/pqc/benchmark", (req, res) => {
     metrics: [
       { algorithm: "RSA-2048", category: "Classical RSA", publicKeySize: 256, privateKeySize: 1184, ciphertextOverhead: 256, handshakeTimeMs: 14.2, quantumSecurityBits: 0, classicalSecurityBits: 112, nistStatus: "Deprecating", shorVulnerable: true },
       { algorithm: "RSA-4096", category: "Classical RSA", publicKeySize: 512, privateKeySize: 2352, ciphertextOverhead: 512, handshakeTimeMs: 92.5, quantumSecurityBits: 0, classicalSecurityBits: 128, nistStatus: "Deprecating", shorVulnerable: true },
-      { algorithm: "ECDH Secp256r1", category: "Classical ECC", publicKeySize: 64, privateKeySize: 32, ciphertextOverhead: 64, handshakeTimeMs: 0.8, quantumSecurityBits: 0, classicalSecurityBits: 128, nistStatus: "Disallowed Post-2030", shorVulnerable: true },
-      { algorithm: "X25519", category: "Classical ECC", publicKeySize: 32, privateKeySize: 32, ciphertextOverhead: 32, handshakeTimeMs: 0.4, quantumSecurityBits: 0, classicalSecurityBits: 128, nistStatus: "Disallowed Post-2030", shorVulnerable: true },
+      { algorithm: "ECDH Secp256r1", category: "Classical ECC", publicKeySize: 64, privateKeySize: 32, ciphertextOverhead: 64, handshakeTimeMs: 0.8, quantumSecurityBits: 0, classicalSecurityBits: 128, nistStatus: "CLASSICAL_REFERENCE — verify current migration guidance independently", shorVulnerable: true },
+      { algorithm: "X25519", category: "Classical ECC", publicKeySize: 32, privateKeySize: 32, ciphertextOverhead: 32, handshakeTimeMs: 0.4, quantumSecurityBits: 0, classicalSecurityBits: 128, nistStatus: "CLASSICAL_REFERENCE — verify current migration guidance independently", shorVulnerable: true },
       { algorithm: "ML-KEM-768", category: "NIST PQC", publicKeySize: 1184, privateKeySize: 2400, ciphertextOverhead: 1088, handshakeTimeMs: 1.1, quantumSecurityBits: 192, classicalSecurityBits: 192, nistStatus: "NIST Standard (FIPS 203)", shorVulnerable: false },
       { algorithm: "X25519 + ML-KEM-768 Hybrid", category: "Hybrid PQC", publicKeySize: 1216, privateKeySize: 2432, ciphertextOverhead: 1120, handshakeTimeMs: 1.5, quantumSecurityBits: 192, classicalSecurityBits: 256, nistStatus: "Recommended Hybrid", shorVulnerable: false }
     ]
@@ -176,8 +176,8 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
         ? "The analyzed configuration relies on classical RSA/ECC public-key primitives vulnerable to Shor's algorithm on Cryptographically Relevant Quantum Computers (CRQCs). Recorded ciphertexts are immediately at risk from Store-Now-Decrypt-Later (SNDL) attacks."
         : "The system configuration utilizes modern post-quantum primitives (ML-KEM-768 / Hybrid PQC) conforming to NIST FIPS 203 guidelines.",
       vulnerabilities: isRsaOrEcc ? [
-        { title: "Shor's Algorithm Public-Key Break", description: "Classical RSA / ECDHE key exchange relies on discrete logarithms and integer factorization, easily broken by Shor's algorithm in polynomial time.", severity: "CRITICAL", affectedStandard: "NIST SP 800-52 Rev 2 Deprecated" },
-        { title: "Store-Now-Decrypt-Later (SNDL) Exposure", description: "Adversaries passively recording current encrypted sessions will decrypt them retroactively as soon as a quantum computer with sufficient logical qubits becomes available.", severity: "HIGH", affectedStandard: "NIST IR 8547 PQC Transition" }
+        { title: "Shor's Algorithm Public-Key Break", description: "Classical RSA / ECDHE key exchange relies on discrete logarithms and integer factorization, vulnerable to Shor's algorithm on a sufficiently capable fault-tolerant quantum computer; practical resource requirements are not modeled here.", severity: "CRITICAL", affectedStandard: "NIST SP 800-52 Rev 2 Deprecated" },
+        { title: "Store-Now-Decrypt-Later (SNDL) Exposure", description: "Recorded traffic can create a store-now-decrypt-later migration concern when long-term confidentiality matters; actual exposure depends on protocol details, data retention and future capabilities.", severity: "HIGH", affectedStandard: "NIST IR 8547 PQC Transition" }
       ] : [],
       recommendations: [{
         action: "Deploy Hybrid X25519 + ML-KEM-768 Key Exchange",
