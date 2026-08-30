@@ -28,7 +28,8 @@ app.get("/api/health", (req, res) => {
     status: "ok",
     service: "QuantumShield PQC Server",
     timestamp: new Date().toISOString(),
-    cryptoEngine: "OpenSSL / Node WebCrypto (X25519 + HKDF-SHA256 + AES-256-GCM + ML-KEM-768)",
+    cryptoEngine: "Node crypto X25519 + HKDF-SHA256; PQC handshake is currently a simulation and not a verified ML-KEM implementation",
+    pqcStatus: "simulation_not_production_verified",
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY)
   });
 });
@@ -94,8 +95,9 @@ app.post("/api/pqc/handshake", (req, res) => {
         serverX25519Hex: serverX25519PublicRaw.toString("hex"),
         serverCiphertextMLKEMHex: pqCiphertext.toString("hex"),
         status: "key_exchanged",
-        protocol: "X25519 + ML-KEM-768 (Crystals-Kyber) + HKDF-SHA256",
-        quantumBits: 192,
+        protocol: "X25519 + simulated ML-KEM-shaped test data + HKDF-SHA256",
+        pqcStatus: "simulation_not_production_verified",
+        quantumBits: null,
         classicalBits: 256
       });
     }
