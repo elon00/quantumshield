@@ -273,7 +273,7 @@ export const CryptoExchangeHub: React.FC = () => {
       priceUsd: 3480.50,
       totalUsd: 6961.00,
       exchange: 'Uniswap v3 (DEX)',
-      pqcSignatureStatus: 'ML-DSA-65 SIGNED',
+      pqcSignatureStatus: 'SIMULATION_ONLY — NOT ML-DSA SIGNED',
       txHash: '0x8f2a93c714e82b991d09e51c2f90a18e38d771bc4'
     },
     {
