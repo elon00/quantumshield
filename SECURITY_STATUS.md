@@ -23,6 +23,17 @@
 
 Do not describe a release as **quantum-safe**, **production-verified**, **NIST-compliant**, or **cryptographically audited** unless reproducible evidence supporting that exact claim is published.
 
+## Verification matrix
+
+| Claim | Current evidence |
+|---|---|
+| X25519 + HKDF research path | Source-level implementation and CI build evidence |
+| ML-KEM-768 | Not evidenced as implemented |
+| ML-DSA | Not evidenced as implemented |
+| Hybrid PQC interoperability | Not evidenced |
+| Cryptographic audit | Not evidenced |
+| Production deployment | Not evidenced by CI alone |
+
 ## Required evidence for PQC release
 
 1. Reviewed implementation or dependency provenance.
