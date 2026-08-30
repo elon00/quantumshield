@@ -413,7 +413,7 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
       overallRiskScore: isRsaOrEcc ? 92 : hasExplicitPqc ? 40 : 50,
       riskLevel: isRsaOrEcc ? "CRITICAL" : "REVIEW_REQUIRED",
       summary: isRsaOrEcc
-        ? "The analyzed configuration relies on classical RSA/ECC public-key primitives vulnerable to Shor's algorithm on Cryptographically Relevant Quantum Computers (CRQCs). Recorded ciphertext[...]
+        ? "The analyzed configuration references classical public-key primitives that may require post-quantum migration planning; this fallback does not establish exploitability or compliance."
         : hasExplicitPqc
           ? "The input references post-quantum primitives, but the fallback cannot verify implementation correctness, deployment, or compliance."
           : "The fallback could not determine the cryptographic posture from the supplied input.",
