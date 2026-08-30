@@ -72,7 +72,7 @@ export interface TradeOrder {
   priceUsd: number;
   totalUsd: number;
   exchange: 'Binance (CEX)' | 'Uniswap v3 (DEX)' | 'Coinbase Prime' | 'Curve PQC Pool';
-  pqcSignatureStatus: 'ML-DSA-65 SIGNED' | 'SECP256K1 VULNERABLE' | 'VERIFIED';
+  pqcSignatureStatus: 'SIMULATION_ONLY — NOT ML-DSA SIGNED' | 'SECP256K1 VULNERABLE' | 'VERIFIED';
   txHash: string;
 }
 
@@ -285,12 +285,12 @@ export const CryptoExchangeHub: React.FC = () => {
       priceUsd: 94250.00,
       totalUsd: 9425.00,
       exchange: 'Binance (CEX)',
-      pqcSignatureStatus: 'VERIFIED',
+      pqcSignatureStatus: 'SIMULATION_ONLY — NOT VERIFIED',
       txHash: '0x13c72e90f142ba390d12fe88ab511a0937b8d141'
     }
   ]);
 
-  // Live price fluctuation simulation
+  // Local price fluctuation simulation — not live market data
   useEffect(() => {
     const interval = setInterval(() => {
       setAssets(prev => prev.map(asset => {
@@ -343,7 +343,7 @@ export const CryptoExchangeHub: React.FC = () => {
       priceUsd: fromPrice,
       totalUsd: totalUsd,
       exchange: selectedVenue,
-      pqcSignatureStatus: pqcProtectionEnabled ? 'ML-DSA-65 SIGNED' : 'SECP256K1 VULNERABLE',
+      pqcSignatureStatus: pqcProtectionEnabled ? 'SIMULATION_ONLY — NO ML-DSA IMPLEMENTATION' : 'SIMULATION_ONLY — NO ON-CHAIN SIGNATURE',
       txHash: `0x${Math.random().toString(16).substring(2, 42)}`
     };
 
@@ -363,7 +363,7 @@ export const CryptoExchangeHub: React.FC = () => {
       return updated;
     });
 
-    alert(`Successfully swapped ${swapAmount} ${swapFromSymbol} for ${estimatedReceiveAmount.toFixed(4)} ${swapToSymbol} on ${selectedVenue}! (${pqcProtectionEnabled ? 'PQC Protected with ML-DSA-65' : 'Standard ECDSA'})`);
+    alert(`Simulation complete: no real trade or blockchain transaction was executed. Local sample balance updated for demonstration only.`);
   };
 
   return (
@@ -380,17 +380,17 @@ export const CryptoExchangeHub: React.FC = () => {
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="px-2.5 py-1 bg-amber-400 text-black font-black text-[10px] uppercase tracking-widest">
-                  GLOBAL CRYPTO EXCHANGE & INTELLIGENCE CENTER
+                  CRYPTO MARKET RESEARCH SANDBOX
                 </span>
                 <span className="text-[10px] text-amber-300/80 uppercase font-bold">
-                  BINANCE • UNISWAP • MESSARI • COINGECKO • COINMARKETCAP
+                  LOCAL SAMPLE DATA • NO LIVE PROVIDER CONNECTION
                 </span>
               </div>
               <h2 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tight">
-                CRYPTO CURRENCIES, EXCHANGES & RESEARCH ENGINE
+                CRYPTO RESEARCH & SIMULATION DASHBOARD
               </h2>
               <p className="text-sm text-slate-300 max-w-3xl leading-relaxed font-sans">
-                Full-spectrum cryptocurrency aggregator, CEX/DEX spot & order book analytics, Messari institutional research, real-time industry news feed, instant PQC-secured token swapping, and audit transactional ledger.
+                Research dashboard with local sample market data and simulated portfolio/swap interactions. It does not execute trades, provide live market data, verify third-party news, or provide ML-DSA transaction signatures.
               </p>
             </div>
           </div>
