@@ -2,7 +2,7 @@
 
 ## Reality-first status
 
-QuantumShield is a **post-quantum security prototype**. Its current checked-in server demonstrates a hybrid-key-exchange architecture and includes a Gemini-assisted audit path, but cryptographic production readiness must be established by reproducible implementation tests and independent review.
+QuantumShield is a **post-quantum migration research prototype**. Its current checked-in server contains a real X25519 + HKDF path and a separately labeled placeholder PQ layer used to demonstrate architecture. Cryptographic production readiness requires a real reviewed ML-KEM implementation, reproducible tests, and independent review.
 
 ### What is verified in this repository
 - Node/Express server with `/api/health`, PQC handshake, benchmark and key-analysis endpoints.
@@ -22,8 +22,10 @@ QuantumShield is a **post-quantum security prototype**. Its current checked-in s
 Copy `.env.example` to a local environment file. **Never commit real API keys or credentials.**
 
 ```env
-GEMINI_API_KEY=""
-APP_URL="http://localhost:3000"
+GEMINI_API_KEY=
+GEMINI_MODEL=
+APP_URL=http://localhost:3000
+PORT=3000
 ```
 
 Gemini is optional for the AI audit endpoint; without a key, the endpoint should clearly identify its response as an offline fallback rather than pretending an external model was used.
