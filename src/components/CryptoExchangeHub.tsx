@@ -609,7 +609,7 @@ export const CryptoExchangeHub: React.FC = () => {
                 <Building2 className="w-5 h-5 text-amber-400" />
                 <div>
                   <h3 className="font-bold text-white text-sm uppercase">BINANCE CEX SPOT ORDER BOOK</h3>
-                  <span className="text-[10px] text-white/50">PAIR: {selectedAsset.symbol}/USDT • LIVE STREAMING DEPTH</span>
+                  <span className="text-[10px] text-white/50">PAIR: {selectedAsset.symbol}/USDT • NOT LIVE — SAMPLE DATA DEPTH</span>
                 </div>
               </div>
               <span className="px-2.5 py-1 bg-emerald-500/20 border border-emerald-500 text-emerald-400 font-bold text-[10px]">
@@ -826,8 +826,8 @@ export const CryptoExchangeHub: React.FC = () => {
             <div className="flex items-center gap-3">
               <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
               <div>
-                <span className="text-white font-bold text-xs block">ML-DSA-65 LATTICE SIGNATURE PROTECTION</span>
-                <span className="text-[10px] text-white/60">Guarantees quantum resistance for swap transaction signature</span>
+                <span className="text-white font-bold text-xs block">SIMULATION-ONLY PQC OPTION</span>
+                <span className="text-[10px] text-white/60">Does not create an ML-DSA signature or provide cryptographic protection</span>
               </div>
             </div>
 
@@ -843,7 +843,7 @@ export const CryptoExchangeHub: React.FC = () => {
             onClick={handleExecuteSwap}
             className="w-full py-4 bg-amber-400 hover:bg-white text-black font-black text-sm uppercase tracking-widest cursor-pointer transition-all shadow-[0_0_20px_rgba(251,191,36,0.3)]"
           >
-            CONFIRM & EXECUTE PQC TOKEN SWAP
+            RUN LOCAL SWAP SIMULATION
           </button>
         </div>
       )}
@@ -906,17 +906,17 @@ export const CryptoExchangeHub: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 5: LIVE CRYPTO NEWS FEED */}
+      {/* TAB 5: SAMPLE CRYPTO NEWS */}
       {activeTab === 'news' && (
         <div className="space-y-4 font-mono">
           <div className="bg-[#111111] border border-white/10 p-4 flex justify-between items-center">
             <span className="font-bold text-white uppercase text-sm flex items-center gap-2">
               <Newspaper className="w-4 h-4 text-amber-400" />
-              <span>REAL-TIME CRYPTO INDUSTRY NEWS TICKER</span>
+              <span>LOCAL SAMPLE NEWS TICKER</span>
             </span>
             <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-              LIVE STREAMING
+              NOT LIVE — SAMPLE DATA
             </span>
           </div>
 
@@ -954,8 +954,8 @@ export const CryptoExchangeHub: React.FC = () => {
               <div className="flex items-center gap-3">
                 <FileText className="w-5 h-5 text-amber-400" />
                 <div>
-                  <h3 className="font-bold text-white text-sm uppercase">TRANSACTIONAL LEDGER & PQC AUDIT LOGS</h3>
-                  <span className="text-[10px] text-white/50">IMMUTABLE CRYPTOGRAPHIC ORDER RECORDS</span>
+                  <h3 className="font-bold text-white text-sm uppercase">LOCAL SIMULATION LEDGER</h3>
+                  <span className="text-[10px] text-white/50">LOCAL RECORDS — NOT IMMUTABLE OR ON-CHAIN</span>
                 </div>
               </div>
               <span className="text-[10px] text-slate-400 font-bold">TOTAL TRANSACTIONS: {tradeHistory.length}</span>
@@ -971,7 +971,7 @@ export const CryptoExchangeHub: React.FC = () => {
                     <th className="p-3 text-right">AMOUNT</th>
                     <th className="p-3 text-right">TOTAL (USD)</th>
                     <th className="p-3">VENUE / EXCHANGE</th>
-                    <th className="p-3 text-center">PQC SIGNATURE AUDIT</th>
+                    <th className="p-3 text-center">SIMULATION STATUS</th>
                     <th className="p-3">TRANSACTION HASH</th>
                   </tr>
                 </thead>
