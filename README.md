@@ -1,22 +1,61 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# QuantumShield
 
-# Run and deploy your AI Studio app
+## Reality-first status
 
-This contains everything you need to run your app locally.
+QuantumShield is a **post-quantum security prototype**. Its current checked-in server demonstrates a hybrid-key-exchange architecture and includes a Gemini-assisted audit path, but cryptographic production readiness must be established by reproducible implementation tests and independent review.
 
-View your app in AI Studio: https://ai.studio/apps/3a072c53-6f48-4113-9ee8-552b3de14b0b
+### What is verified in this repository
+- Node/Express server with `/api/health`, PQC handshake, benchmark and key-analysis endpoints.
+- X25519 key agreement and HKDF-SHA256 are implemented with Node `crypto`.
+- Gemini integration is server-side and activated only when `GEMINI_API_KEY` is configured.
+- Netlify build configuration is present for a Vite build and serverless API routing.
+- Firestore security rules and a security specification are included.
 
-## Run Locally
+### What is **not** claimed yet
+- The current PQC handshake is **not a verified ML-KEM-768 implementation**. The checked-in handshake currently uses generated placeholder ciphertext/shared-secret material for the ML-KEM portion and must not be represented as production ML-KEM.
+- QuantumShield does not provide proof of quantum-resistant security merely from its name or benchmark UI.
+- Benchmark timings and security-bit labels are informational until reproduced by a controlled benchmark suite.
+- A deployed Netlify site is not, by itself, evidence of cryptographic correctness.
 
-**Prerequisites:**  Node.js
+## Secure configuration
 
+Copy `.env.example` to a local environment file. **Never commit real API keys or credentials.**
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
-prototype link:
-https://quantumshield-q.netlify.app/
+```env
+GEMINI_API_KEY=""
+APP_URL="http://localhost:3000"
+```
+
+Gemini is optional for the AI audit endpoint; without a key, the endpoint should clearly identify its response as an offline fallback rather than pretending an external model was used.
+
+## Local development
+
+```bash
+npm install
+npm run lint
+npm run build
+npm run dev
+```
+
+## Evidence gates
+
+Before calling QuantumShield production-ready, the following must pass:
+
+1. Reproducible dependency installation from the committed lockfile.
+2. Typecheck and production build.
+3. Real ML-KEM-768 key generation, encapsulation and decapsulation using a reviewed implementation or library.
+4. Known-answer/vector tests and negative/tamper tests.
+5. Hybrid X25519 + ML-KEM key agreement test proving both peers derive the same key.
+6. API integration and failure-path tests.
+7. Security-rule tests for Firestore.
+8. Independent review of cryptographic choices and parameter claims.
+
+## Threat-model principles
+
+- Classical RSA/ECC exposure to Shor's algorithm must be described accurately and without speculative timelines being presented as facts.
+- “Post-quantum” means the relevant primitive and implementation have evidence; it is not a marketing label.
+- Simulations, placeholders and fallback responses must remain explicitly labeled.
+
+## Security specification
+
+See [`security_spec.md`](security_spec.md) for data invariants and negative security scenarios.
