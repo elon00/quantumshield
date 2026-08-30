@@ -235,7 +235,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
 
   return (
     <div className="space-y-6">
-      {/* Q-DAY DOOMSDAY LIVE COUNTDOWN CLOCK BANNER */}
+      {/* Q-DAY RESEARCH COUNTDOWN DEMONSTRATION */}
       <QDayDoomsdayClock />
 
       {/* Banner / Summary */}
@@ -332,7 +332,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
             <div className="bg-[#050505] p-4 border border-white/10">
               <div className="flex items-center justify-between text-white/60 mb-1.5 text-[10px] uppercase tracking-widest">
                 <span className="text-white font-bold">1. BROWSER ECDH PUBLIC KEY (DEMONSTRATION):</span>
-                <span>P-256 BROWSER API</span>
+                <span>LOCAL BROWSER ECDH API</span>
               </div>
               <div className="text-white/90 break-all bg-[#111111] p-3 border border-white/5">
                 {clientX25519Public || <span className="text-white/30 italic">Not generated yet</span>}
