@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 const fs = require("fs");
-const targets = ["README.md", "server.ts", "src/App.tsx"];
+const targets = [
+  "README.md",
+  "server.ts",
+  "src/App.tsx",
+  "src/components/KeyExchangeSandbox.tsx",
+  "src/components/CryptoExchangeHub.tsx"
+];
 const forbidden = [
   /production[- ]verified ML-KEM/i,
   /real quantum hardware/i,
@@ -11,7 +17,10 @@ const forbidden = [
   /status:\s*"key_exchanged"/,
   /modern post-quantum primitives.*conforming to NIST FIPS 203/i,
   /quantumResistanceScore:\s*[1-9]/i,
-  /quantumBits:\s*[1-9]/i
+  /quantumBits:\s*[1-9]/i,
+  /100% quantum-safe/i,
+  /ML-DSA-65 SIGNED/i,
+  /Successfully swapped .*PQC Protected/i
 ];
 let failed = false;
 for (const file of targets) {
