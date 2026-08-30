@@ -47,7 +47,11 @@ const forbidden = [
   /NIST Compliant/i,
   /ML-KEM-768 Enforced/i,
   /LIVE CRYPTO NEWS FEED/i,
-  /MESSARI AUDIT/i
+  /MESSARI AUDIT/i,
+  /MARKET AGGREGATOR \(GECKO\/CMC\)/i,
+  /EXCHANGES & ORDER BOOK \(BINANCE\/UNISWAP\)/i,
+  /MESSARI RESEARCH & INTEL/i,
+  /TRANSACTIONAL LEDGER & AUDIT/i
 ];
 let failed = false;
 for (const file of targets) {
