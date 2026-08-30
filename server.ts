@@ -319,8 +319,8 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
           : [],
         recommendations: [
           {
-            action: "Deploy Hybrid X25519 + ML-KEM-768 Key Exchange",
-            details: "Upgrade TLS endpoint to OpenSSL 3.4 or BoringSSL supporting ML-KEM-768 (FIPS 203) alongside classical X25519.",
+            action: "Evaluate a reviewed hybrid PQC migration design",
+            details: "Select protocol and library versions using current vendor documentation, then independently verify supported groups and interoperability before deployment.",
             targetStandard: "NIST FIPS 203",
             codeSnippet: `// OpenSSL 3.4 / Nginx Post-Quantum TLS 1.3 Configuration\nssl_protocols TLSv1.3;\nssl_conf_command Groups X25519MLKEM768:X25519;`
           }
