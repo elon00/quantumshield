@@ -59,7 +59,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
   const handleRunFullHandshake = async () => {
     setIsRunning(true);
     setStep(1);
-    onAddLog({ source: 'system', message: 'Initiating Hybrid PQC Key Exchange (X25519 + ML-KEM-768)...', type: 'info' });
+    onAddLog({ source: 'system', message: 'Starting clearly labeled local cryptography demonstration. This is not an ML-KEM or X25519 production handshake.', type: 'info' });
 
     try {
       // STEP 1: Client Key Pair Generation
@@ -82,7 +82,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
 
       onAddLog({ 
         source: 'client', 
-        message: `Generated client public keys: X25519 (32B) + ML-KEM-768 (1184B)`, 
+        message: `Generated demonstration keys: browser P-256 ECDH + placeholder PQ-shaped data`, 
         type: 'success' 
       });
 
@@ -96,7 +96,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
         type: 'info' 
       });
 
-      // Call Backend API or simulate server-side execution
+      // Backend API is optional; any local fallback remains a demonstration and must not be represented as a real network handshake.
       const serverRes = await fetch('/api/pqc/handshake', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,9 +115,9 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
         const data = await serverRes.json();
         serverPubX25519Hex = data.serverX25519Hex;
         serverCiphertextHex = data.serverCiphertextMLKEMHex;
-        onAddLog({ source: 'server', message: 'Server generated response via Express backend API endpoint', type: 'success' });
+        onAddLog({ source: 'server', message: 'Server API returned a demonstration response; current PQ portion is not ML-KEM.', type: 'info' });
       } else {
-        // Local fallback server simulation
+        // Local demonstration fallback — no external server, no ML-KEM, no X25519.
         const serverEcdhPair = await crypto.subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]);
         const exportedServerPub = await crypto.subtle.exportKey("raw", serverEcdhPair.publicKey);
         serverPubX25519Hex = bytesToHex(new Uint8Array(exportedServerPub));
@@ -143,7 +143,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
       setStep(3);
       onAddLog({
         source: 'server',
-        message: `Server returned X25519 public key & ML-KEM-768 ciphertext (1088B).`,
+        message: `Demonstration returned browser ECDH/public data and placeholder PQ-shaped bytes; this is NOT ML-KEM ciphertext.`,
         type: 'info'
       });
 
@@ -180,13 +180,13 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
 
       onAddLog({
         source: 'client',
-        message: `Client decapsulated ML-KEM & computed HKDF-SHA256 session key: ${bytesToHex(finalClientAes).substring(0, 32)}...`,
+        message: `Client completed a local demonstration derivation using placeholder PQ data; no ML-KEM decapsulation occurred.`,
         type: 'success'
       });
 
       // Save to Firestore
       await saveSessionLogToFirestore({
-        status: 'established',
+        status: 'demonstration_only',
         clientPublicX25519: clientX25519Hex.substring(0, 32),
         clientPublicMLKEM: clientMLKEMHex.substring(0, 32),
         serverPublicX25519: serverPubX25519Hex.substring(0, 32),
@@ -263,15 +263,13 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
         <div className="relative z-10 space-y-2">
           <div className="flex items-center gap-2 text-[#FF003C] text-xs font-mono font-bold tracking-[0.2em] uppercase">
             <Sparkles className="w-4 h-4 text-[#FF003C]" />
-            <span>PRIMARY PROTOCOL // HYBRID KEY EXCHANGE</span>
+            <span>RESEARCH SANDBOX // DEMONSTRATION ONLY</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tight">
-            X25519 (ECDH) + ML-KEM-768 (CRYSTALS-KYBER)
+            Browser ECDH + Placeholder PQ Data
           </h2>
           <p className="text-sm text-slate-300 max-w-3xl leading-relaxed font-sans">
-            Combines classical Elliptic Curve Diffie-Hellman with NIST FIPS 203 lattice-based key encapsulation. 
-            Even if a quantum adversary utilizes Shor's algorithm to break X25519, HKDF derivation guarantees 
-            session keys remain 100% quantum-safe due to the ML-KEM-768 lattice layer.
+            This sandbox demonstrates application flow and key-derivation concepts. The browser path uses available ECDH primitives and placeholder PQ-shaped data; it does not implement ML-KEM, does not prove hybrid interoperability, and must not be used as a production quantum-security claim.
           </p>
         </div>
       </div>
@@ -292,7 +290,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
             ) : (
               <>
                 <Play className="w-4 h-4 fill-current" />
-                <span>EXECUTE HYBRID HANDSHAKE</span>
+                <span>RUN DEMONSTRATION</span>
               </>
             )}
           </button>
@@ -319,7 +317,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
           {step === 5 && (
             <span className="px-3 py-1 bg-[#00FF41]/20 border border-[#00FF41] text-[#00FF41] font-bold flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              SESSION KEY ESTABLISHED
+              DEMONSTRATION COMPLETE
             </span>
           )}
         </div>
@@ -336,7 +334,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
               </div>
               <div>
                 <h3 className="text-lg font-black text-white uppercase tracking-tight">CLIENT NODE (INITIATOR)</h3>
-                <p className="text-xs text-white/50 font-mono">EPHEMERAL KEYS & ML-KEM DECAPSULATION</p>
+                <p className="text-xs text-white/50 font-mono">DEMONSTRATION KEYS & PLACEHOLDER PQ DATA</p>
               </div>
             </div>
             <span className={`text-[10px] px-2.5 py-1 font-mono font-bold uppercase tracking-wider ${
@@ -350,8 +348,8 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
             {/* X25519 Public Key */}
             <div className="bg-[#050505] p-4 border border-white/10">
               <div className="flex items-center justify-between text-white/60 mb-1.5 text-[10px] uppercase tracking-widest">
-                <span className="text-white font-bold">1. CLASSICAL X25519 PUBLIC KEY (32B):</span>
-                <span>CURVE25519</span>
+                <span className="text-white font-bold">1. BROWSER ECDH PUBLIC KEY (DEMONSTRATION):</span>
+                <span>P-256 BROWSER API</span>
               </div>
               <div className="text-white/90 break-all bg-[#111111] p-3 border border-white/5">
                 {clientX25519Public || <span className="text-white/30 italic">Not generated yet</span>}
@@ -361,8 +359,8 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
             {/* ML-KEM-768 Public Key */}
             <div className="bg-[#050505] p-4 border border-white/10">
               <div className="flex items-center justify-between text-white/60 mb-1.5 text-[10px] uppercase tracking-widest">
-                <span className="text-[#FF003C] font-bold">2. ML-KEM-768 PUBLIC KEY (1184B):</span>
-                <span>NIST FIPS 203</span>
+                <span className="text-[#FF003C] font-bold">2. PLACEHOLDER PQ PUBLIC DATA:</span>
+                <span>NOT ML-KEM IMPLEMENTATION</span>
               </div>
               <div className="text-white/90 break-all bg-[#111111] p-3 border border-white/5 max-h-20 overflow-y-auto">
                 {clientMLKEMPublic || <span className="text-white/30 italic">Not generated yet</span>}
@@ -379,7 +377,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
                 <span className="text-[#00FF41]">CLIENT SESSION KEY</span>
               </div>
               <div className="text-[#00FF41] font-bold break-all bg-[#00FF41]/10 p-3 border border-[#00FF41]/30">
-                {clientAesKey ? bytesToHex(clientAesKey) : <span className="text-white/30 font-normal italic">Waiting for decapsulation...</span>}
+                {clientAesKey ? bytesToHex(clientAesKey) : <span className="text-white/30 font-normal italic">Waiting for demonstration derivation...</span>}
               </div>
             </div>
           </div>
@@ -394,7 +392,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
               </div>
               <div>
                 <h3 className="text-lg font-black text-white uppercase tracking-tight">SERVER NODE (RESPONDER)</h3>
-                <p className="text-xs text-white/50 font-mono">ECDH & ML-KEM ENCAPSULATION</p>
+                <p className="text-xs text-white/50 font-mono">ECDH & PLACEHOLDER PQ RESPONSE</p>
               </div>
             </div>
             <span className={`text-[10px] px-2.5 py-1 font-mono font-bold uppercase tracking-wider ${
@@ -408,7 +406,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
             {/* Server X25519 Public Key */}
             <div className="bg-[#050505] p-4 border border-white/10">
               <div className="flex items-center justify-between text-white/60 mb-1.5 text-[10px] uppercase tracking-widest">
-                <span className="text-white font-bold">1. SERVER X25519 PUBLIC KEY (32B):</span>
+                <span className="text-white font-bold">1. SERVER/LOCAL DEMONSTRATION PUBLIC DATA:</span>
                 <span>ECDH POINT</span>
               </div>
               <div className="text-white/90 break-all bg-[#111111] p-3 border border-white/5">
@@ -419,8 +417,8 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
             {/* ML-KEM-768 Encapsulated Ciphertext */}
             <div className="bg-[#050505] p-4 border border-white/10">
               <div className="flex items-center justify-between text-white/60 mb-1.5 text-[10px] uppercase tracking-widest">
-                <span className="text-[#FF003C] font-bold">2. ML-KEM-768 CIPHERTEXT (1088B):</span>
-                <span>LATTICE PAYLOAD</span>
+                <span className="text-[#FF003C] font-bold">2. PLACEHOLDER PQ BYTES:</span>
+                <span>NOT CRYPTOGRAPHIC ML-KEM</span>
               </div>
               <div className="text-white/90 break-all bg-[#111111] p-3 border border-white/5 max-h-20 overflow-y-auto">
                 {serverCiphertextMLKEM || <span className="text-white/30 italic">Awaiting encapsulation...</span>}
