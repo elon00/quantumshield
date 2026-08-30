@@ -18,14 +18,20 @@ jobs:
       - run: npm ci
       - name: Run full release gate
         run: npm run check:release
-      - name: Validate Netlify deployment configuration
+      - name: Check Netlify deployment configuration
+        id: netlify
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          test -n "$NETLIFY_AUTH_TOKEN" || { echo "Missing NETLIFY_AUTH_TOKEN secret"; exit 1; }
-          test -n "$NETLIFY_SITE_ID" || { echo "Missing NETLIFY_SITE_ID secret"; exit 1; }
+          if [ -n "$NETLIFY_AUTH_TOKEN" ] && [ -n "$NETLIFY_SITE_ID" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Netlify production deployment skipped: repository secrets are not fully configured."
+          fi
       - name: Deploy production bundle
+        if: steps.netlify.outputs.configured == 'true'
         run: npx netlify-cli deploy --prod --dir=dist --functions=netlify/functions --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
