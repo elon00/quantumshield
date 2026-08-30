@@ -7,7 +7,8 @@ import crypto from "crypto";
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+app.disable("x-powered-by");
+app.use(express.json({ limit: "256kb" }));
 
 // In-memory session cache for server key state verification
 const activeHandshakeSessions = new Map<string, any>();
@@ -40,7 +41,7 @@ function nodeHKDF(ecdhSecret: Buffer, pqSecret: Buffer, infoStr: string): Buffer
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    service: "QuantumShield PQC Server",
+    service: "QuantumShield Research Security Server",
     timestamp: new Date().toISOString(),
     cryptoEngine: "Node crypto X25519 + HKDF-SHA256; PQC handshake is currently a simulation and not a verified ML-KEM implementation",
     pqcStatus: "simulation_not_production_verified",
@@ -68,7 +69,7 @@ app.post("/api/pqc/handshake", (req, res) => {
       const serverX25519Public = serverECDH.publicKey.export({ type: "spki", format: "der" });
       const serverX25519PublicRaw = serverX25519Public.subarray(-32); // Extract 32-byte raw curve point
 
-      // Simulated ML-KEM-768 Encapsulation on server
+      // Placeholder PQ-shaped data for demonstration only. This is NOT ML-KEM encapsulation.
       const pqSharedSecret = crypto.randomBytes(32);
       const pqCiphertext = crypto.randomBytes(1088);
       
@@ -101,7 +102,7 @@ app.post("/api/pqc/handshake", (req, res) => {
       }
 
       // HKDF Key Derivation on server
-      const serverDerivedKey = nodeHKDF(ecdhSecret, pqSharedSecret, "QuantumShield-Hybrid-X25519-MLKEM768-HKDF-SHA256");
+      const serverDerivedKey = nodeHKDF(ecdhSecret, pqSharedSecret, "QuantumShield-X25519-DEMO-PQ-HKDF-SHA256");
 
       activeHandshakeSessions.set(newSessionId, {
         sessionId: newSessionId,
@@ -262,6 +263,12 @@ app.post("/api/pqc/analyze-keys", (req, res) => {
 app.post("/api/ai/crypto-audit", async (req, res) => {
   try {
     const { codeOrConfig, systemName } = req.body;
+    if (typeof codeOrConfig !== "string" || codeOrConfig.length > 100000) {
+      return res.status(400).json({ error: "codeOrConfig must be a string of at most 100000 characters" });
+    }
+    if (systemName !== undefined && (typeof systemName !== "string" || systemName.length > 200)) {
+      return res.status(400).json({ error: "systemName must be a string of at most 200 characters" });
+    }
 
     // If GEMINI_API_KEY is missing, return the offline fallback audit instead of an error so the endpoint works without paid API access.
     if (!process.env.GEMINI_API_KEY) {
@@ -381,12 +388,15 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
 
     // Fallback response if all AI models are temporarily busy (503 high demand)
     const isRsaOrEcc = /RSA|ECDH|ECDSA|Secp|Prime|TLSv1\.2/i.test(codeOrConfig || "");
+    const hasExplicitPqc = /ML-KEM|ML-DSA|SLH-DSA|FIPS 203|FIPS 204|FIPS 205/i.test(codeOrConfig || "");
     const fallbackAudit = {
-      overallRiskScore: isRsaOrEcc ? 92 : 20,
-      riskLevel: isRsaOrEcc ? "CRITICAL" : "LOW",
+      overallRiskScore: isRsaOrEcc ? 92 : hasExplicitPqc ? 40 : 50,
+      riskLevel: isRsaOrEcc ? "CRITICAL" : "REVIEW_REQUIRED",
       summary: isRsaOrEcc
         ? "The analyzed configuration relies on classical RSA/ECC public-key primitives vulnerable to Shor's algorithm on Cryptographically Relevant Quantum Computers (CRQCs). Recorded ciphertext[...]
-        : "The system configuration utilizes modern post-quantum primitives (ML-KEM-768 / Hybrid PQC) conforming to NIST FIPS 203 guidelines.",
+        : hasExplicitPqc
+          ? "The input references post-quantum primitives, but the fallback cannot verify implementation correctness, deployment, or compliance."
+          : "The fallback could not determine the cryptographic posture from the supplied input.",
       vulnerabilities: isRsaOrEcc ? [
         {
           title: "Shor's Algorithm Public-Key Break",
