@@ -25,6 +25,7 @@ interface PaymentGatewayProps {
 }
 
 export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
+  // Local demonstration balances only. They are not wallet, bank, or on-chain balances.
   const [balanceUSD, setBalanceUSD] = useState<number>(10000);
   const [balanceETH, setBalanceETH] = useState<number>(2.5);
   const [balancePQC, setBalancePQC] = useState<number>(5000);
@@ -34,7 +35,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
   const [activeTab, setActiveTab] = useState<'send' | 'receive' | 'grant' | 'history'>('send');
 
   // Form states
-  const [recipient, setRecipient] = useState<string>('0x71C7656EC7ab88b098defB751B7401B5f6d8976F');
+  const [recipient, setRecipient] = useState<string>('DEMO-RECIPIENT-001');
   const [amount, setAmount] = useState<string>('250');
   const [currency, setCurrency] = useState<'USD' | 'ETH' | 'PQC_TOKEN'>('USD');
   const [memo, setMemo] = useState<string>('QuantumShield Security Operations');
@@ -141,8 +142,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
           amount: numAmount,
           currency,
           status: 'completed',
-          sender: 'QuantumShield Vault (0x3A07)',
-          recipient: recipient || '0xRecipientAddress',
+          sender: 'QuantumShield Demo Vault',
+          recipient: recipient || 'DEMO-RECIPIENT',
           timestamp: new Date().toLocaleTimeString(),
           memo: memo || 'Demonstration Transfer',
           pqcSignatureHex: sigHex
@@ -195,7 +196,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
           currency: 'USD',
           status: 'completed',
           sender: 'Sample Grant Source',
-          recipient: 'QuantumShield Vault (0x3A07)',
+          recipient: 'QuantumShield Demo Vault',
           timestamp: new Date().toLocaleTimeString(),
           memo: 'Post-Quantum Migration Ecosystem Incentive',
           pqcSignatureHex: sigHex
@@ -370,14 +371,14 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
 
                 <div className="space-y-1">
                   <label className="block text-white/60 uppercase tracking-widest text-[10px]">
-                    RECIPIENT ADDRESS / VAULT ID
+                    DEMONSTRATION RECIPIENT LABEL
                   </label>
                   <input
                     type="text"
                     required
                     value={recipient}
                     onChange={(e) => setRecipient(e.target.value)}
-                    placeholder="0x... or Vault ID"
+                    placeholder="Demo recipient label"
                     className="w-full bg-[#050505] border border-white/20 focus:border-[#00FF41] focus:outline-none p-2.5 text-white font-mono"
                   />
                 </div>
