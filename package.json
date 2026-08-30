@@ -14,7 +14,9 @@
     "check:truth": "node scripts/check-truth.cjs",
     "check:env": "node scripts/check-env.cjs",
     "check:config": "node scripts/check-config.cjs",
-    "check:lock": "node scripts/check-lock.cjs"
+    "check:lock": "node scripts/check-lock.cjs",
+    "check:release": "npm run test",
+    "predeploy": "npm run check:release"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
