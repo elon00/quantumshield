@@ -38,7 +38,9 @@ const forbidden = [
   /quantum-secured transfer/i,
   /strongly recommended prior to 2030/i,
   /easily broken by Shor's algorithm/i,
-  /will decrypt them retroactively/i
+  /will decrypt them retroactively/i,
+  /LIVE HYBRID ENCRYPTED CHANNEL VERIFICATION/i,
+  /HKDF-SHA256\( ECDH_Secret \|\| MLKEM_Secret \)/i
 ];
 let failed = false;
 for (const file of targets) {
