@@ -476,7 +476,7 @@ export const CryptoExchangeHub: React.FC = () => {
         })}
       </div>
 
-      {/* TAB 1: MARKET AGGREGATOR */}
+      {/* TAB 1: SAMPLE MARKET DATA */}
       {activeTab === 'market' && (
         <div className="space-y-6">
           {/* Controls Bar */}
@@ -947,7 +947,7 @@ export const CryptoExchangeHub: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 6: TRANSACTIONAL LEDGER & AUDIT */}
+      {/* TAB 6: SIMULATED LEDGER */}
       {activeTab === 'ledger' && (
         <div className="space-y-6 font-mono">
           <div className="bg-[#111111] border border-white/10 p-5 space-y-4">
