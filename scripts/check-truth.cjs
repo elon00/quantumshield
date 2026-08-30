@@ -45,7 +45,9 @@ const forbidden = [
   /estimatedQuantumBreakTime: "Polynomial Time O\(\(log N\)\^3\)/i,
   /SAFE \(ML-KEM\)/i,
   /NIST Compliant/i,
-  /ML-KEM-768 Enforced/i
+  /ML-KEM-768 Enforced/i,
+  /LIVE CRYPTO NEWS FEED/i,
+  /MESSARI AUDIT/i
 ];
 let failed = false;
 for (const file of targets) {
