@@ -5,9 +5,15 @@ import { GoogleGenAI } from "@google/genai";
 import crypto from "crypto";
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT || 3000);
 
 app.disable("x-powered-by");
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
 app.use(express.json({ limit: "256kb" }));
 
 // In-memory session cache for server key state verification
@@ -228,10 +234,10 @@ app.post("/api/pqc/analyze-keys", (req, res) => {
       algorithm,
       shorVulnerable: true,
       estimatedQuantumBreakTime: "Polynomial Time O((log N)^3) on Cryptographically Relevant Quantum Computers (CRQC)",
-      nistCompliance: "DEPRECATED / NON-COMPLIANT for Post-2030 data security",
+      nistCompliance: "CLASSICAL ALGORITHM DETECTED — migration requirements depend on the applicable policy and use case",
       riskLevel: "CRITICAL",
       impact: "Store Now, Decrypt Later (SNDL) attacks threaten long-term confidentiality of recorded traffic.",
-      recommendedReplacement: "X25519 + ML-KEM-768 (FIPS 203) Hybrid Key Exchange"
+      recommendedReplacement: "Evaluate a reviewed hybrid migration design appropriate to the deployed protocol and applicable standards"
     });
   }
 
@@ -346,7 +352,10 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
 `;
 
     // Attempt generation with fallback model aliases if high-demand/503 errors occur
-    const candidateModels = ["gemini-3.6-flash", "gemini-flash-latest", "gemini-3.1-flash-lite"];
+    const candidateModels = [
+      ...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []),
+      "gemini-flash-latest"
+    ];
     let lastError: any = null;
     let responseText: string | null = null;
 
