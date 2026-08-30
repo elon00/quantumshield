@@ -42,7 +42,10 @@ const forbidden = [
   /LIVE HYBRID ENCRYPTED CHANNEL VERIFICATION/i,
   /HKDF-SHA256\( ECDH_Secret \|\| MLKEM_Secret \)/i,
   /Disallowed Post-2030/i,
-  /estimatedQuantumBreakTime: "Polynomial Time O\(\(log N\)\^3\)/i
+  /estimatedQuantumBreakTime: "Polynomial Time O\(\(log N\)\^3\)/i,
+  /SAFE \(ML-KEM\)/i,
+  /NIST Compliant/i,
+  /ML-KEM-768 Enforced/i
 ];
 let failed = false;
 for (const file of targets) {
