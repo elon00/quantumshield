@@ -131,8 +131,8 @@ const INITIAL_CRYPTO_ASSETS: CryptoAsset[] = [
     marketCap: 1485000000,
     volume24h: 320000000,
     circulatingSupply: '100M PQC',
-    category: 'PQC Safe',
-    quantumRisk: 'SAFE (ML-KEM)',
+    category: 'PQC Research',
+    quantumRisk: 'RESEARCH SAMPLE — NOT VERIFIED',
     cexLiquidityScore: 91,
     dexLiquidityScore: 96,
     messariRating: 'AAA'
@@ -414,34 +414,34 @@ export const CryptoExchangeHub: React.FC = () => {
         {/* Global Market Stats Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 pt-6 mt-6 border-t border-amber-400/30 text-[11px]">
           <div className="bg-[#050505] p-2.5 border border-white/10">
-            <span className="text-white/50 block text-[9px] uppercase font-bold">TOTAL CRYPTO MARKET CAP</span>
-            <span className="text-white font-bold text-sm">$3.42 TRILLION</span>
+            <span className="text-white/50 block text-[9px] uppercase font-bold">SAMPLE MARKET METRIC</span>
+            <span className="text-white font-bold text-sm">LOCAL SAMPLE</span>
             <span className="text-emerald-400 text-[10px] block font-bold">+3.2% 24h</span>
           </div>
           <div className="bg-[#050505] p-2.5 border border-white/10">
-            <span className="text-white/50 block text-[9px] uppercase font-bold">24H VOLUME (GLOBAL)</span>
-            <span className="text-white font-bold text-sm">$148.5 BILLION</span>
+            <span className="text-white/50 block text-[9px] uppercase font-bold">SAMPLE VOLUME METRIC</span>
+            <span className="text-white font-bold text-sm">LOCAL SAMPLE</span>
             <span className="text-cyan-400 text-[10px] block font-bold">CEX 68% / DEX 32%</span>
           </div>
           <div className="bg-[#050505] p-2.5 border border-white/10">
-            <span className="text-white/50 block text-[9px] uppercase font-bold">BITCOIN DOMINANCE</span>
-            <span className="text-amber-400 font-bold text-sm">54.1%</span>
+            <span className="text-white/50 block text-[9px] uppercase font-bold">SAMPLE DOMINANCE METRIC</span>
+            <span className="text-amber-400 font-bold text-sm">LOCAL SAMPLE</span>
             <span className="text-white/60 text-[10px] block">ETH 12.3%</span>
           </div>
           <div className="bg-[#050505] p-2.5 border border-white/10">
-            <span className="text-white/50 block text-[9px] uppercase font-bold">FEAR & GREED INDEX</span>
-            <span className="text-emerald-400 font-bold text-sm">82 (EXTREME GREED)</span>
+            <span className="text-white/50 block text-[9px] uppercase font-bold">SAMPLE SENTIMENT METRIC</span>
+            <span className="text-emerald-400 font-bold text-sm">LOCAL SAMPLE</span>
             <span className="text-white/60 text-[10px] block">Institutional Inflow</span>
           </div>
           <div className="bg-[#050505] p-2.5 border border-white/10">
-            <span className="text-white/50 block text-[9px] uppercase font-bold">MESSARI PQC SCORE</span>
-            <span className="text-cyan-400 font-bold text-sm">94.8 / 100</span>
-            <span className="text-emerald-400 text-[10px] block font-bold">NIST Compliant</span>
+            <span className="text-white/50 block text-[9px] uppercase font-bold">RESEARCH SCORE</span>
+            <span className="text-cyan-400 font-bold text-sm">NOT VERIFIED</span>
+            <span className="text-emerald-400 text-[10px] block font-bold">NO THIRD-PARTY CERTIFICATION</span>
           </div>
           <div className="bg-[#050505] p-2.5 border border-white/10">
             <span className="text-white/50 block text-[9px] uppercase font-bold">SAMPLE PQC METRIC</span>
             <span className="text-emerald-400 font-bold text-sm">1,420 VAULTS</span>
-            <span className="text-white/60 text-[10px] block">ML-KEM-768 Enforced</span>
+            <span className="text-white/60 text-[10px] block">NOT A VERIFIED ML-KEM DEPLOYMENT</span>
           </div>
         </div>
       </div>
@@ -492,7 +492,7 @@ export const CryptoExchangeHub: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto">
-              {['ALL', 'Layer 1', 'DeFi', 'Layer 2', 'RWA', 'PQC Safe'].map(cat => (
+              {['ALL', 'Layer 1', 'DeFi', 'Layer 2', 'RWA', 'PQC Research'].map(cat => (
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
