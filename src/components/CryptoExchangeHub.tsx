@@ -55,7 +55,7 @@ export interface CryptoAsset {
 export interface CryptoNewsItem {
   id: string;
   title: string;
-  source: 'PQC Crypto Daily' | 'CoinGecko Research' | 'CoinMarketCap News' | 'Binance Research' | 'PQC Crypto Daily';
+  source: 'PQC Crypto Daily';
   timestamp: string;
   summary: string;
   category: 'Market Analysis' | 'Security & PQC' | 'DeFi' | 'CEX Updates' | 'Regulation';
@@ -450,12 +450,12 @@ export const CryptoExchangeHub: React.FC = () => {
       {/* NAVIGATION SUB-TABS */}
       <div className="flex flex-wrap items-center gap-2 border-b border-white/10 pb-3">
         {[
-          { id: 'market', label: '1 // MARKET AGGREGATOR (GECKO/CMC)', icon: BarChart3 },
-          { id: 'cex-dex', label: '2 // EXCHANGES & ORDER BOOK (BINANCE/UNISWAP)', icon: Building2 },
+          { id: 'market', label: '1 // SAMPLE MARKET DATA', icon: BarChart3 },
+          { id: 'cex-dex', label: '2 // SAMPLE VENUE WORKFLOW', icon: Building2 },
           { id: 'swap', label: '3 // SIMULATED SWAP WORKFLOW', icon: Repeat },
-          { id: 'research', label: '4 // MESSARI RESEARCH & INTEL', icon: BookOpen },
+          { id: 'research', label: '4 // LOCAL RESEARCH VIEW', icon: BookOpen },
           { id: 'news', label: '5 // SAMPLE NEWS DATA', icon: Newspaper },
-          { id: 'ledger', label: '6 // TRANSACTIONAL LEDGER & AUDIT', icon: FileText }
+          { id: 'ledger', label: '6 // SIMULATED LEDGER', icon: FileText }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
