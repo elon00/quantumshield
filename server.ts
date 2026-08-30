@@ -5,9 +5,17 @@ import { GoogleGenAI } from "@google/genai";
 import crypto from "crypto";
 
 const app = express();
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const ALLOWED_ORIGIN = process.env.APP_URL;
 const PORT = Number(process.env.PORT || 3000);
 
 app.disable("x-powered-by");
+app.use((req, res, next) => {
+  if (!IS_PRODUCTION || !ALLOWED_ORIGIN) return next();
+  const origin = req.headers.origin;
+  if (!origin || origin === ALLOWED_ORIGIN) return next();
+  return res.status(403).json({ error: "Origin not allowed" });
+});
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "no-referrer");
@@ -227,6 +235,9 @@ app.get("/api/pqc/benchmark", (req, res) => {
 // 4. Quantum Key Analyzer
 app.post("/api/pqc/analyze-keys", (req, res) => {
   const { algorithm, keySize } = req.body;
+  if (algorithm !== undefined && (typeof algorithm !== "string" || algorithm.length > 100)) {
+    return res.status(400).json({ error: "algorithm must be a string of at most 100 characters" });
+  }
   const alg = String(algorithm || "RSA").toUpperCase();
 
   if (alg.includes("RSA") || alg.includes("ECC") || alg.includes("ECDH") || alg.includes("CURVE25519")) {
@@ -269,7 +280,7 @@ app.post("/api/pqc/analyze-keys", (req, res) => {
 app.post("/api/ai/crypto-audit", async (req, res) => {
   try {
     const { codeOrConfig, systemName } = req.body;
-    if (typeof codeOrConfig !== "string" || codeOrConfig.length > 100000) {
+    if (typeof codeOrConfig !== "string" || codeOrConfig.length === 0 || codeOrConfig.length > 100000) {
       return res.status(400).json({ error: "codeOrConfig must be a string of at most 100000 characters" });
     }
     if (systemName !== undefined && (typeof systemName !== "string" || systemName.length > 200)) {
