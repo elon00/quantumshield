@@ -307,7 +307,7 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
                 title: "Shor's Algorithm Public-Key Break",
                 description: "RSA factorization and elliptic-curve discrete-log assumptions are vulnerable to Shor's algorithm on a sufficiently capable fault-tolerant quantum computer; this endpoint does not model practical resource requirements.",
                 severity: "CRITICAL",
-                affectedStandard: "NIST SP 800-52 Rev 2 Deprecated"
+                affectedStandard: "Classical public-key migration reference — verify applicable current guidance independently"
               },
               {
                 title: "Store-Now-Decrypt-Later (SNDL) Exposure",
@@ -321,8 +321,8 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
           {
             action: "Evaluate a reviewed hybrid PQC migration design",
             details: "Select protocol and library versions using current vendor documentation, then independently verify supported groups and interoperability before deployment.",
-            targetStandard: "NIST FIPS 203",
-            codeSnippet: `// OpenSSL 3.4 / Nginx Post-Quantum TLS 1.3 Configuration\nssl_protocols TLSv1.3;\nssl_conf_command Groups X25519MLKEM768:X25519;`
+            targetStandard: "NIST FIPS 203 (algorithm reference)",
+            codeSnippet: "// No deployment-ready TLS configuration is supplied by this offline fallback. Verify supported groups and library configuration independently."
           }
         ],
         aiAnalysis: "Offline heuristic generated because Gemini API is not configured. This result is a migration triage aid, not a compliance determination or deployment recommendation."
@@ -433,8 +433,8 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
       ] : [],
       recommendations: [
         {
-          action: "Deploy Hybrid X25519 + ML-KEM-768 Key Exchange",
-          details: "Upgrade TLS endpoint to OpenSSL 3.4 or BoringSSL supporting ML-KEM-768 (FIPS 203) alongside classical X25519.",
+          action: "Evaluate a reviewed hybrid PQC migration design",
+          details: "Select protocol and library versions using current vendor documentation, then independently verify supported groups and interoperability before deployment.",
           targetStandard: "NIST FIPS 203",
           codeSnippet: `// OpenSSL 3.4 / Nginx Post-Quantum TLS 1.3 Configuration\nssl_protocols TLSv1.3;\nssl_conf_command Groups X25519MLKEM768:X25519;`
         }
