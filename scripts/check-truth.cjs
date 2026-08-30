@@ -31,7 +31,11 @@ const forbidden = [
   /MLKEM768_SIG_/i,
   /Guarantees quantum resistance for swap transaction signature/i,
   /LIVE CRYPTO NEWS FEED/i,
-  /IMMUTABLE CRYPTOGRAPHIC ORDER RECORDS/i
+  /IMMUTABLE CRYPTOGRAPHIC ORDER RECORDS/i,
+  /MLKEM768_SIG_/i,
+  /post-quantum signed vault public key/i,
+  /directly into your encrypted account/i,
+  /quantum-secured transfer/i
 ];
 let failed = false;
 for (const file of targets) {
