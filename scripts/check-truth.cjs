@@ -8,7 +8,10 @@ const forbidden = [
   /Compliant with NIST FIPS 203.*CNSA 2\.0/i,
   /pqcStatus:\s*"verified"/i,
   /ML-KEM-768 Encapsulation on server/i,
-  /status:\s*"key_exchanged"/
+  /status:\s*"key_exchanged"/,
+  /modern post-quantum primitives.*conforming to NIST FIPS 203/i,
+  /quantumResistanceScore:\s*[1-9]/i,
+  /quantumBits:\s*[1-9]/i
 ];
 let failed = false;
 for (const file of targets) {
