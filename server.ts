@@ -11,6 +11,20 @@ app.use(express.json());
 
 // In-memory session cache for server key state verification
 const activeHandshakeSessions = new Map<string, any>();
+const MAX_HANDSHAKE_SESSIONS = 1000;
+const HANDSHAKE_TTL_MS = 10 * 60 * 1000;
+
+function pruneHandshakeSessions() {
+  const cutoff = Date.now() - HANDSHAKE_TTL_MS;
+  for (const [id, session] of activeHandshakeSessions) {
+    if (Date.parse(session.createdAt) < cutoff) activeHandshakeSessions.delete(id);
+  }
+  while (activeHandshakeSessions.size >= MAX_HANDSHAKE_SESSIONS) {
+    const oldest = activeHandshakeSessions.keys().next().value;
+    if (!oldest) break;
+    activeHandshakeSessions.delete(oldest);
+  }
+}
 
 // Helper for HKDF-SHA256 in Node.js
 function nodeHKDF(ecdhSecret: Buffer, pqSecret: Buffer, infoStr: string): Buffer {
@@ -40,6 +54,13 @@ app.post("/api/pqc/handshake", (req, res) => {
     const { clientX25519Hex, clientMLKEMHex, action, sessionId } = req.body;
 
     if (action === "initiate") {
+      pruneHandshakeSessions();
+      if (clientX25519Hex && !/^[0-9a-fA-F]{64}$/.test(clientX25519Hex)) {
+        return res.status(400).json({ error: "clientX25519Hex must be exactly 32 bytes encoded as hex" });
+      }
+      if (clientMLKEMHex && !/^[0-9a-fA-F]+$/.test(clientMLKEMHex)) {
+        return res.status(400).json({ error: "clientMLKEMHex must be hexadecimal when supplied" });
+      }
       const newSessionId = sessionId || `pqc_sess_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
       
       // Server generates ECDH (X25519) keypair
@@ -58,8 +79,9 @@ app.post("/api/pqc/handshake", (req, res) => {
         pqCiphertext.set(clientPrefix, 16);
       }
 
-      // Compute ECDH shared secret on server if client key is provided
-      let ecdhSecret = crypto.randomBytes(32);
+      // Compute real X25519 ECDH shared secret when a valid client key is provided.
+      // Do not fabricate a fallback secret if the client key is invalid.
+      let ecdhSecret: Buffer;
       if (clientX25519Hex && clientX25519Hex.length === 64) {
         try {
           const clientKeyDer = Buffer.concat([
@@ -72,8 +94,10 @@ app.post("/api/pqc/handshake", (req, res) => {
             publicKey: clientPubKeyObj
           });
         } catch (e) {
-          console.warn("Using fallback entropy for ECDH derivation simulation:", e);
+          return res.status(400).json({ error: "Invalid X25519 public key" });
         }
+      } else {
+        return res.status(400).json({ error: "clientX25519Hex is required for the X25519 handshake" });
       }
 
       // HKDF Key Derivation on server
@@ -87,15 +111,15 @@ app.post("/api/pqc/handshake", (req, res) => {
         serverX25519Hex: serverX25519PublicRaw.toString("hex"),
         serverCiphertextMLKEM: pqCiphertext.toString("hex"),
         serverDerivedKeyHex: serverDerivedKey.toString("hex"),
-        status: "established"
+        status: "demonstration_established"
       });
 
       return res.json({
         sessionId: newSessionId,
         serverX25519Hex: serverX25519PublicRaw.toString("hex"),
         serverCiphertextMLKEMHex: pqCiphertext.toString("hex"),
-        status: "key_exchanged",
-        protocol: "X25519 + simulated ML-KEM-shaped test data + HKDF-SHA256",
+        status: "demonstration_key_exchange",
+        protocol: "X25519 + placeholder PQ test data + HKDF-SHA256 (NOT ML-KEM)",
         pqcStatus: "simulation_not_production_verified",
         quantumBits: null,
         classicalBits: 256
