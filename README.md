@@ -39,6 +39,10 @@ npm run build
 npm run dev
 ```
 
+## Current deployment status
+
+The source repository can pass its CI and release gates independently of external hosting credentials. The GitHub Actions production deployment additionally requires a valid `NETLIFY_SITE_ID`; without that repository secret, deployment is intentionally stopped before contacting a Netlify site. This is an external configuration prerequisite, not evidence of a successful production deployment.
+
 ## Deployment prerequisites
 
 The GitHub deployment workflow requires repository secrets named:
