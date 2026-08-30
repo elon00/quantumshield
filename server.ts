@@ -420,13 +420,13 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
       vulnerabilities: isRsaOrEcc ? [
         {
           title: "Shor's Algorithm Public-Key Break",
-          description: "Classical RSA / ECDHE key exchange relies on discrete logarithms and integer factorization, easily broken by Shor's algorithm in polynomial time.",
+          description: "RSA and elliptic-curve public-key assumptions are vulnerable to Shor's algorithm on a sufficiently capable fault-tolerant quantum computer; practical resource requirements are not modeled here.",
           severity: "CRITICAL",
           affectedStandard: "NIST SP 800-52 Rev 2 Deprecated"
         },
         {
           title: "Store-Now-Decrypt-Later (SNDL) Exposure",
-          description: "Adversaries passively recording current encrypted sessions will decrypt them retroactively as soon as a quantum computer with sufficient logical qubits becomes available.",
+          description: "Recorded traffic can create a store-now-decrypt-later migration concern when long-term confidentiality matters; actual exposure depends on protocol details, data retention and future capabilities.",
           severity: "HIGH",
           affectedStandard: "NIST IR 8547 PQC Transition"
         }
