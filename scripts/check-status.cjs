@@ -6,7 +6,8 @@ const required = [
   "ML-KEM-768 | Not evidenced as implemented",
   "ML-DSA | Not evidenced as implemented",
   "Hybrid PQC interoperability | Not evidenced",
-  "Cryptographic audit | Not evidenced"
+  "Cryptographic audit | Not evidenced",
+  "Production deployment | Not evidenced by CI alone"
 ];
 for (const item of required) {
   if (!status.includes(item)) {
