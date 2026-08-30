@@ -35,7 +35,10 @@ const forbidden = [
   /MLKEM768_SIG_/i,
   /post-quantum signed vault public key/i,
   /directly into your encrypted account/i,
-  /quantum-secured transfer/i
+  /quantum-secured transfer/i,
+  /strongly recommended prior to 2030/i,
+  /easily broken by Shor's algorithm/i,
+  /will decrypt them retroactively/i
 ];
 let failed = false;
 for (const file of targets) {
