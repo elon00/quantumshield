@@ -55,7 +55,7 @@ export interface CryptoAsset {
 export interface CryptoNewsItem {
   id: string;
   title: string;
-  source: 'Messari Intelligence' | 'CoinGecko Research' | 'CoinMarketCap News' | 'Binance Research' | 'PQC Crypto Daily';
+  source: 'PQC Crypto Daily' | 'CoinGecko Research' | 'CoinMarketCap News' | 'Binance Research' | 'PQC Crypto Daily';
   timestamp: string;
   summary: string;
   category: 'Market Analysis' | 'Security & PQC' | 'DeFi' | 'CEX Updates' | 'Regulation';
@@ -199,11 +199,12 @@ const INITIAL_CRYPTO_ASSETS: CryptoAsset[] = [
   }
 ];
 
+// Local sample headlines only; these are not fetched or verified from the named publishers.
 const INITIAL_NEWS: CryptoNewsItem[] = [
   {
     id: 'news-1',
     title: 'NIST Standardizes FIPS 203 & 204: Major CEX Exchanges Prepare Post-Quantum Cold Storage Upgrades',
-    source: 'Messari Intelligence',
+    source: 'PQC Crypto Daily',
     timestamp: '12 MINS AGO',
     summary: 'Binance, Coinbase Prime, and Kraken announce roadmap to mandate ML-KEM-768 lattice encryption for enterprise multi-sig cold storage before Q-Day deadline.',
     category: 'Security & PQC',
@@ -212,7 +213,7 @@ const INITIAL_NEWS: CryptoNewsItem[] = [
   {
     id: 'news-2',
     title: 'Uniswap v4 Hooks Integrate Post-Quantum Signature Verification for High-Value Swaps',
-    source: 'CoinGecko Research',
+    source: 'PQC Crypto Daily',
     timestamp: '45 MINS AGO',
     summary: 'Decentralized exchange liquidity pools test zero-overhead ML-DSA signature hooks, offering MEV-resistant and quantum-safe atomic routing.',
     category: 'DeFi',
@@ -221,7 +222,7 @@ const INITIAL_NEWS: CryptoNewsItem[] = [
   {
     id: 'news-3',
     title: 'Bitcoin Developer Proposal (BIP-Q): Lattice Signatures Proposed to Protect Secp256k1 Satoshi Coins',
-    source: 'CoinMarketCap News',
+    source: 'PQC Crypto Daily',
     timestamp: '2 HOURS AGO',
     summary: 'Bitcoin Core contributors propose a soft-fork covenant migration allowing legacy unspent transaction outputs (UTXOs) to transition to Dilithium lattice keys.',
     category: 'Market Analysis',
@@ -230,7 +231,7 @@ const INITIAL_NEWS: CryptoNewsItem[] = [
   {
     id: 'news-4',
     title: 'Global Crypto Market Cap Exceeds $3.4T as Institutional Capital Flees Legacy Vulnerable RSA Vaults',
-    source: 'Binance Research',
+    source: 'PQC Crypto Daily',
     timestamp: '4 HOURS AGO',
     summary: 'Institutional asset managers allocate $12.4B into quantum-audited crypto funds, driving record liquidity across top CEX spot and derivatives order books.',
     category: 'CEX Updates',
@@ -440,7 +441,7 @@ export const CryptoExchangeHub: React.FC = () => {
           </div>
           <div className="bg-[#050505] p-2.5 border border-white/10">
             <span className="text-white/50 block text-[9px] uppercase font-bold">SAMPLE PQC METRIC</span>
-            <span className="text-emerald-400 font-bold text-sm">1,420 VAULTS</span>
+            <span className="text-emerald-400 font-bold text-sm">LOCAL SAMPLE</span>
             <span className="text-white/60 text-[10px] block">NOT A VERIFIED ML-KEM DEPLOYMENT</span>
           </div>
         </div>
@@ -519,7 +520,7 @@ export const CryptoExchangeHub: React.FC = () => {
                   <th className="p-4 text-right">MARKET CAP</th>
                   <th className="p-4 text-right">24H VOLUME</th>
                   <th className="p-4 text-center">QUANTUM THREAT TIER</th>
-                  <th className="p-4 text-center">MESSARI AUDIT</th>
+                  <th className="p-4 text-center">LOCAL SAMPLE RATING</th>
                   <th className="p-4 text-center">ACTION</th>
                 </tr>
               </thead>
@@ -575,7 +576,7 @@ export const CryptoExchangeHub: React.FC = () => {
 
                     <td className="p-4 text-center">
                       <span className="px-2 py-0.5 bg-black border border-amber-400/50 text-amber-300 font-black text-[10px]">
-                        RATING: {asset.messariRating}
+                        SAMPLE: {asset.messariRating}
                       </span>
                     </td>
 
