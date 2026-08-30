@@ -10,14 +10,15 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "npm run check:env && npm run check:config && npm run check:lock && npm run check:truth && npm run lint && npm run build",
+    "test": "npm run check:env && npm run check:config && npm run check:lock && npm run check:truth && npm run check:status && npm run lint && npm run build",
     "check:truth": "node scripts/check-truth.cjs",
     "check:env": "node scripts/check-env.cjs",
     "check:config": "node scripts/check-config.cjs",
     "check:lock": "node scripts/check-lock.cjs",
     "check:release": "npm run test",
     "predeploy": "npm run check:release",
-    "verify": "npm run check:release"
+    "verify": "npm run check:release",
+    "check:status": "node scripts/check-status.cjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
