@@ -1,6 +1,6 @@
 /**
  * QuantumShield PQC - Main Application Entry
- * Full-stack Post-Quantum Cryptography & Hybrid Key Exchange Migration Platform
+ * Post-Quantum Migration Research & Hybrid Key-Exchange Prototype
  */
 
 import React, { useState, useEffect } from 'react';
@@ -30,7 +30,7 @@ export default function App() {
       id: 'init-0',
       timestamp: new Date().toLocaleTimeString(),
       source: 'system',
-      message: 'QuantumShield PQC engine initialized. Express server & WebCrypto active.',
+      message: 'QuantumShield initialized. X25519 server path active; ML-KEM functionality is not implemented in the current handshake.',
       type: 'info'
     }
   ]);
@@ -136,7 +136,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950/80 py-6 text-center text-xs text-slate-500 font-mono">
-        <p>QuantumShield PQC Suite • Compliant with NIST FIPS 203 (ML-KEM) & CNSA 2.0 Specifications</p>
+        <p>QuantumShield Research Suite • NIST PQC standards are migration references; current ML-KEM implementation is not verified</p>
       </footer>
     </div>
   );
