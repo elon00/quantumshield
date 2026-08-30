@@ -51,7 +51,9 @@ const forbidden = [
   /MARKET AGGREGATOR \(GECKO\/CMC\)/i,
   /EXCHANGES & ORDER BOOK \(BINANCE\/UNISWAP\)/i,
   /MESSARI RESEARCH & INTEL/i,
-  /TRANSACTIONAL LEDGER & AUDIT/i
+  /TRANSACTIONAL LEDGER & AUDIT/i,
+  /Q-DAY DOOMSDAY LIVE COUNTDOWN/i,
+  /P-256 BROWSER API/i
 ];
 let failed = false;
 for (const file of targets) {
