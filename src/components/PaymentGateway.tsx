@@ -68,7 +68,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
             amount: 10000,
             currency: 'USD',
             status: 'completed',
-            sender: 'NIST PQC Migration Fund',
+            sender: 'Sample Migration Fund',
             recipient: 'QuantumShield Vault',
             timestamp: new Date(Date.now() - 3600000 * 4).toLocaleTimeString(),
             memo: 'Initial Post-Quantum Reserve Deposit',
@@ -83,8 +83,8 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
             sender: 'PQC Liquidity Protocol',
             recipient: 'QuantumShield Vault',
             timestamp: new Date(Date.now() - 3600000 * 2).toLocaleTimeString(),
-            memo: 'Staked ML-KEM Security Tokens',
-            pqcSignatureHex: 'MLKEM768_SIG_1f2e3d4c5b6a79887766554433221100'
+            memo: 'Sample security-token record',
+            pqcSignatureHex: 'DEMO-NOT-CRYPTOGRAPHIC-1f2e3d4c5b6a79887766554433221100'
           }
         ];
         setTransactions(initialTxs);
@@ -467,10 +467,10 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
                 <div className="p-4 bg-[#050505] border border-cyan-500/40 space-y-3">
                   <div className="flex items-center gap-2 text-cyan-400 font-bold uppercase tracking-wider">
                     <PlusCircle className="w-5 h-5" />
-                    <span>NIST PQC ECOSYSTEM FUND GRANT</span>
+                    <span>SIMULATED PQC ECOSYSTEM GRANT</span>
                   </div>
                   <p className="text-white/70 text-[11px] leading-relaxed">
-                    Test your post-quantum migration setup by claiming a instant $2,500 USD test grant from the NIST PQC Migration Incentive Pool. Funds are deposited straight to your encrypted vault balance.
+                    Add a local $2,500 demonstration record to test the workflow. No NIST program is contacted, no grant is claimed, and no funds are deposited.
                   </p>
 
                   <button
@@ -479,7 +479,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
                     className="w-full py-3 bg-cyan-400 hover:bg-white text-black font-black uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm"
                   >
                     <PlusCircle className="w-4 h-4" />
-                    <span>{isProcessing ? 'DISPATCHING GRANT...' : 'CLAIM $2,500 USD PQC GRANT'}</span>
+                    <span>{isProcessing ? 'RECORDING DEMO...' : 'ADD $2,500 DEMO RECORD'}</span>
                   </button>
                 </div>
               </div>
