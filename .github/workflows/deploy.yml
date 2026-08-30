@@ -3,6 +3,7 @@ name: Deploy to Netlify
 on:
   push:
     branches: [master]
+
 permissions:
   contents: read
 
@@ -17,8 +18,15 @@ jobs:
       - run: npm ci
       - name: Run full release gate
         run: npm run check:release
-      - name: Deploy production bundle
-        run: npx netlify-cli deploy --prod --dir=dist --functions=netlify/functions
+      - name: Validate Netlify deployment configuration
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
- 
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          test -n "$NETLIFY_AUTH_TOKEN" || { echo "Missing NETLIFY_AUTH_TOKEN secret"; exit 1; }
+          test -n "$NETLIFY_SITE_ID" || { echo "Missing NETLIFY_SITE_ID secret"; exit 1; }
+      - name: Deploy production bundle
+        run: npx netlify-cli deploy --prod --dir=dist --functions=netlify/functions --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
