@@ -199,7 +199,7 @@ app.get("/api/pqc/benchmark", (req, res) => {
         handshakeTimeMs: 0.4,
         quantumSecurityBits: 0,
         classicalSecurityBits: 128,
-        nistStatus: "Disallowed Post-2030",
+        nistStatus: "CLASSICAL_REFERENCE — verify current migration guidance independently",
         shorVulnerable: true
       },
       {
@@ -244,7 +244,7 @@ app.post("/api/pqc/analyze-keys", (req, res) => {
     return res.json({
       algorithm,
       shorVulnerable: true,
-      estimatedQuantumBreakTime: "Polynomial Time O((log N)^3) on Cryptographically Relevant Quantum Computers (CRQC)",
+      estimatedQuantumBreakTime: "Asymptotic Shor complexity is not a practical break-time estimate; this endpoint does not model fault-tolerant quantum resources.",
       nistCompliance: "CLASSICAL ALGORITHM DETECTED — migration requirements depend on the applicable policy and use case",
       riskLevel: "CRITICAL",
       impact: "Store Now, Decrypt Later (SNDL) attacks threaten long-term confidentiality of recorded traffic.",
