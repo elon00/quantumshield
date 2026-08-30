@@ -46,7 +46,7 @@ export interface CryptoAsset {
   volume24h: number;
   circulatingSupply: string;
   category: 'Layer 1' | 'DeFi' | 'Layer 2' | 'RWA' | 'PQC Safe';
-  quantumRisk: 'HIGH (ECDSA)' | 'MEDIUM (RSA)' | 'SAFE (ML-KEM)' | 'MIGRATING';
+  quantumRisk: 'HIGH (ECDSA)' | 'MEDIUM (RSA)' | 'RESEARCH SAMPLE — NOT VERIFIED' | 'MIGRATING';
   cexLiquidityScore: number;
   dexLiquidityScore: number;
   messariRating: 'AAA' | 'AA' | 'A' | 'BBB' | 'BB';
