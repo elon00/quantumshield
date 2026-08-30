@@ -112,6 +112,8 @@ app.post("/api/pqc/handshake", (req, res) => {
 // 3. Cryptographic Benchmark Data API
 app.get("/api/pqc/benchmark", (req, res) => {
   res.json({
+    benchmarkStatus: "REFERENCE_DATA_ONLY",
+    statusNote: "Values in this endpoint are informational UI reference data, not measurements from the current server or proof of production cryptographic performance.",
     metrics: [
       {
         algorithm: "RSA-2048",
@@ -122,7 +124,7 @@ app.get("/api/pqc/benchmark", (req, res) => {
         handshakeTimeMs: 14.2,
         quantumSecurityBits: 0,
         classicalSecurityBits: 112,
-        nistStatus: "Deprecating",
+        nistStatus: "CLASSICAL_REFERENCE — verify current migration guidance independently",
         shorVulnerable: true
       },
       {
@@ -146,7 +148,7 @@ app.get("/api/pqc/benchmark", (req, res) => {
         handshakeTimeMs: 0.8,
         quantumSecurityBits: 0,
         classicalSecurityBits: 128,
-        nistStatus: "Disallowed Post-2030",
+        nistStatus: "CLASSICAL_REFERENCE — verify current migration guidance independently",
         shorVulnerable: true
       },
       {
@@ -170,8 +172,9 @@ app.get("/api/pqc/benchmark", (req, res) => {
         handshakeTimeMs: 1.1,
         quantumSecurityBits: 192,
         classicalSecurityBits: 192,
-        nistStatus: "NIST Standard (FIPS 203)",
-        shorVulnerable: false
+        nistStatus: "NIST FIPS 203 algorithm reference; this server does not implement verified ML-KEM",
+        implementationStatus: "NOT_IMPLEMENTED_IN_CURRENT_HANDSHAKE",
+        shorVulnerable: null
       },
       {
         algorithm: "X25519 + ML-KEM-768 Hybrid",
@@ -182,8 +185,9 @@ app.get("/api/pqc/benchmark", (req, res) => {
         handshakeTimeMs: 1.5,
         quantumSecurityBits: 192,
         classicalSecurityBits: 256,
-        nistStatus: "Recommended Hybrid",
-        shorVulnerable: false
+        nistStatus: "HYBRID_DESIGN_REFERENCE — requires a real ML-KEM implementation and protocol review",
+        implementationStatus: "NOT_IMPLEMENTED_IN_CURRENT_HANDSHAKE",
+        shorVulnerable: null
       }
     ]
   });
