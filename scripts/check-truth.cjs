@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 const fs = require("fs");
-const targets = ["README.md", "server.ts"];
+const targets = ["README.md", "server.ts", "src/App.tsx"];
 const forbidden = [
   /production[- ]verified ML-KEM/i,
   /real quantum hardware/i,
-  /guaranteed quantum[- ]resistant/i
+  /guaranteed quantum[- ]resistant/i,
+  /Compliant with NIST FIPS 203.*CNSA 2\.0/i,
+  /pqcStatus:\s*"verified"/i,
+  /ML-KEM-768 Encapsulation on server/i,
+  /status:\s*"key_exchanged"/
 ];
 let failed = false;
 for (const file of targets) {
@@ -18,4 +22,4 @@ for (const file of targets) {
   }
 }
 if (failed) process.exit(1);
-console.log("TRUTH CHECK PASS: no forbidden unsupported production claims found.");
+console.log("TRUTH CHECK PASS: unsupported production and PQC claims are blocked.");
