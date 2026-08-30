@@ -206,14 +206,27 @@ app.post("/api/pqc/analyze-keys", (req, res) => {
     });
   }
 
+  const isKnownPqc = alg.includes("ML-KEM") || alg.includes("ML-DSA") || alg.includes("SLH-DSA");
+  if (isKnownPqc) {
+    return res.json({
+      algorithm,
+      shorVulnerable: false,
+      estimatedQuantumBreakTime: "Not applicable: this endpoint does not prove implementation security.",
+      nistCompliance: "Algorithm family recognized as a NIST PQC standard; implementation compliance must be independently verified.",
+      riskLevel: "REVIEW_REQUIRED",
+      impact: "Algorithm naming alone is not evidence that the deployed implementation is quantum-safe.",
+      recommendedReplacement: "Verify the concrete implementation, parameters, key handling and protocol integration."
+    });
+  }
+
   return res.json({
     algorithm,
-    shorVulnerable: false,
-    estimatedQuantumBreakTime: "Infeasible (Lattice Learning With Errors / Module LWE resistant to Shor's algorithm)",
-    nistCompliance: "FIPS 203 Standardized / Fully Compliant",
-    riskLevel: "LOW / QUANTUM_SAFE",
-    impact: "Protected against both Shor's algorithm and Grover's algorithm search speedup.",
-    recommendedReplacement: "Already post-quantum secure"
+    shorVulnerable: null,
+    estimatedQuantumBreakTime: "Unknown without algorithm-specific analysis",
+    nistCompliance: "UNKNOWN / NOT VERIFIED",
+    riskLevel: "REVIEW_REQUIRED",
+    impact: "The analyzer cannot infer post-quantum security merely because an algorithm is not RSA or ECC.",
+    recommendedReplacement: "Provide the exact cryptographic primitive and implementation details for review."
   });
 });
 
@@ -227,12 +240,15 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
       console.warn("GEMINI_API_KEY environment variable is missing — returning offline fallback audit.");
 
       const isRsaOrEcc = /RSA|ECDH|ECDSA|Secp|Prime|TLSv1\.2/i.test(codeOrConfig || "");
+      const hasExplicitPqc = /ML-KEM|ML-DSA|SLH-DSA|FIPS 203|FIPS 204|FIPS 205/i.test(codeOrConfig || "");
       const fallbackAudit = {
-        overallRiskScore: isRsaOrEcc ? 92 : 20,
-        riskLevel: isRsaOrEcc ? "CRITICAL" : "LOW",
+        overallRiskScore: isRsaOrEcc ? 92 : hasExplicitPqc ? 40 : 50,
+        riskLevel: isRsaOrEcc ? "CRITICAL" : hasExplicitPqc ? "REVIEW_REQUIRED" : "UNKNOWN",
         summary: isRsaOrEcc
           ? "The analyzed configuration relies on classical RSA/ECC public-key primitives vulnerable to Shor's algorithm on Cryptographically Relevant Quantum Computers (CRQCs). Recorded ciphertext may be decrypted once large-scale quantum hardware is available."
-          : "The system configuration utilizes modern post-quantum primitives (ML-KEM-768 / Hybrid PQC) conforming to NIST FIPS 203 guidelines.",
+          : hasExplicitPqc
+          ? "The input references post-quantum primitives, but this offline heuristic cannot verify implementation correctness or compliance."
+          : "The offline heuristic could not determine the cryptographic posture from the supplied input.",
         vulnerabilities: isRsaOrEcc
           ? [
               {
