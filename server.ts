@@ -294,10 +294,10 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
       const isRsaOrEcc = /RSA|ECDH|ECDSA|Secp|Prime|TLSv1\.2/i.test(codeOrConfig || "");
       const hasExplicitPqc = /ML-KEM|ML-DSA|SLH-DSA|FIPS 203|FIPS 204|FIPS 205/i.test(codeOrConfig || "");
       const fallbackAudit = {
-        overallRiskScore: isRsaOrEcc ? 92 : hasExplicitPqc ? 40 : 50,
+        overallRiskScore: isRsaOrEcc ? 75 : hasExplicitPqc ? 50 : 50,
         riskLevel: isRsaOrEcc ? "CRITICAL" : hasExplicitPqc ? "REVIEW_REQUIRED" : "UNKNOWN",
         summary: isRsaOrEcc
-          ? "The analyzed configuration relies on classical RSA/ECC public-key primitives vulnerable to Shor's algorithm on Cryptographically Relevant Quantum Computers (CRQCs). Recorded ciphertext may be decrypted once large-scale quantum hardware is available."
+          ? "The input references classical public-key primitives that are vulnerable to Shor's algorithm on a sufficiently capable fault-tolerant quantum computer. This heuristic does not estimate when such a machine will exist or prove that recorded ciphertext is recoverable."
           : hasExplicitPqc
           ? "The input references post-quantum primitives, but this offline heuristic cannot verify implementation correctness or compliance."
           : "The offline heuristic could not determine the cryptographic posture from the supplied input.",
@@ -305,13 +305,13 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
           ? [
               {
                 title: "Shor's Algorithm Public-Key Break",
-                description: "Classical RSA / ECDHE key exchange relies on discrete logarithms and integer factorization, easily broken by Shor's algorithm in polynomial time.",
+                description: "RSA factorization and elliptic-curve discrete-log assumptions are vulnerable to Shor's algorithm on a sufficiently capable fault-tolerant quantum computer; this endpoint does not model practical resource requirements.",
                 severity: "CRITICAL",
                 affectedStandard: "NIST SP 800-52 Rev 2 Deprecated"
               },
               {
                 title: "Store-Now-Decrypt-Later (SNDL) Exposure",
-                description: "Adversaries passively recording current encrypted sessions will decrypt them retroactively as soon as a quantum computer with sufficient logical qubits becomes available.",
+                description: "Recorded traffic may face future store-now-decrypt-later risk when long-term confidentiality matters; exploitability depends on protocol details, retained data and future cryptographic capabilities.",
                 severity: "HIGH",
                 affectedStandard: "NIST IR 8547 PQC Transition"
               }
@@ -325,7 +325,7 @@ app.post("/api/ai/crypto-audit", async (req, res) => {
             codeSnippet: `// OpenSSL 3.4 / Nginx Post-Quantum TLS 1.3 Configuration\nssl_protocols TLSv1.3;\nssl_conf_command Groups X25519MLKEM768:X25519;`
           }
         ],
-        aiAnalysis: "Fallback offline audit generated while Gemini API is not configured. Transition to NIST FIPS 203 ML-KEM-768 is strongly recommended prior to 2030."
+        aiAnalysis: "Offline heuristic generated because Gemini API is not configured. This result is a migration triage aid, not a compliance determination or deployment recommendation."
       };
 
       return res.json(fallbackAudit);
@@ -410,7 +410,7 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
     const isRsaOrEcc = /RSA|ECDH|ECDSA|Secp|Prime|TLSv1\.2/i.test(codeOrConfig || "");
     const hasExplicitPqc = /ML-KEM|ML-DSA|SLH-DSA|FIPS 203|FIPS 204|FIPS 205/i.test(codeOrConfig || "");
     const fallbackAudit = {
-      overallRiskScore: isRsaOrEcc ? 92 : hasExplicitPqc ? 40 : 50,
+      overallRiskScore: isRsaOrEcc ? 75 : hasExplicitPqc ? 50 : 50,
       riskLevel: isRsaOrEcc ? "CRITICAL" : "REVIEW_REQUIRED",
       summary: isRsaOrEcc
         ? "The analyzed configuration references classical public-key primitives that may require post-quantum migration planning; this fallback does not establish exploitability or compliance."
@@ -439,7 +439,7 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
           codeSnippet: `// OpenSSL 3.4 / Nginx Post-Quantum TLS 1.3 Configuration\nssl_protocols TLSv1.3;\nssl_conf_command Groups X25519MLKEM768:X25519;`
         }
       ],
-      aiAnalysis: "Fallback offline audit generated while Gemini API is experiencing temporary server demand. Transition to NIST FIPS 203 ML-KEM-768 is strongly recommended prior to 2030."
+      aiAnalysis: "Fallback heuristic generated because the external AI service was unavailable. This result is not a compliance determination or cryptographic verification."
     };
 
     return res.json(fallbackAudit);
