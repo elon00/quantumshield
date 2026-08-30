@@ -72,7 +72,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
             recipient: 'QuantumShield Vault',
             timestamp: new Date(Date.now() - 3600000 * 4).toLocaleTimeString(),
             memo: 'Initial Post-Quantum Reserve Deposit',
-            pqcSignatureHex: 'MLKEM768_SIG_8a92b3c4f5e67d89a1b2c3d4e5f6a7b8c9d0e1f2'
+            pqcSignatureHex: 'DEMO-NOT-CRYPTOGRAPHIC-8a92b3c4f5e67d89a1b2c3d4e5f6a7b8c9d0e1f2'
           },
           {
             id: 'tx_pqc_init_002',
@@ -144,7 +144,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
           sender: 'QuantumShield Vault (0x3A07)',
           recipient: recipient || '0xRecipientAddress',
           timestamp: new Date().toLocaleTimeString(),
-          memo: memo || 'Quantum-Secured Transfer',
+          memo: memo || 'Demonstration Transfer',
           pqcSignatureHex: sigHex
         };
 
@@ -173,7 +173,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
         setAmount('100');
         setMemo('Demonstration Transaction');
       } catch (err: any) {
-        setStatusMsg({ type: 'error', text: 'Transaction signing failed: ' + (err?.message || err) });
+        setStatusMsg({ type: 'error', text: 'Demonstration record failed: ' + (err?.message || err) });
       } finally {
         setIsProcessing(false);
       }
@@ -427,7 +427,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
                   className="w-full py-3 bg-[#00FF41] hover:bg-white text-black font-black uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{isProcessing ? 'AUTHORIZING & SIGNING...' : 'RUN PAYMENT DEMONSTRATION'}</span>
+                  <span>{isProcessing ? 'PROCESSING DEMONSTRATION...' : 'RUN PAYMENT DEMONSTRATION'}</span>
                 </button>
               </form>
             )}
@@ -441,7 +441,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
                   </div>
                   <h4 className="font-bold text-white uppercase tracking-wider text-sm">SAMPLE VAULT IDENTIFIER</h4>
                   <p className="text-white/60 text-[11px]">
-                    Share this post-quantum signed vault public key to receive USD, ETH, or PQC tokens directly into your encrypted account.
+                    This is a sample identifier for the local demonstration only. It cannot receive USD, ETH, or tokens and is not a cryptographic public key.
                   </p>
 
                   <div className="p-3 bg-black border border-white/20 font-mono text-white/90 break-all text-[11px] select-all">
