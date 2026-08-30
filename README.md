@@ -39,6 +39,15 @@ npm run build
 npm run dev
 ```
 
+## Deployment prerequisites
+
+The GitHub deployment workflow requires repository secrets named:
+
+- `NETLIFY_AUTH_TOKEN`
+- `NETLIFY_SITE_ID`
+
+The repository code cannot safely infer or fabricate these credentials. Keep them in GitHub Actions secrets and never commit them to source control.
+
 ## Evidence gates
 
 Before calling QuantumShield production-ready, the following must pass:
