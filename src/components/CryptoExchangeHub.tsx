@@ -45,7 +45,7 @@ export interface CryptoAsset {
   marketCap: number;
   volume24h: number;
   circulatingSupply: string;
-  category: 'Layer 1' | 'DeFi' | 'Layer 2' | 'RWA' | 'PQC Safe';
+  category: 'Layer 1' | 'DeFi' | 'Layer 2' | 'RWA' | 'PQC Research';
   quantumRisk: 'HIGH (ECDSA)' | 'MEDIUM (RSA)' | 'RESEARCH SAMPLE — NOT VERIFIED' | 'MIGRATING';
   cexLiquidityScore: number;
   dexLiquidityScore: number;
