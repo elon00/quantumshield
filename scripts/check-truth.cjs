@@ -25,7 +25,13 @@ const forbidden = [
   /ML-KEM-768 SIGNED/i,
   /FDIC \+ PQC Vault Insured/i,
   /NIST PQC Migration Reserve/i,
-  /successfully authorized and broadcast with NIST ML-KEM/i
+  /successfully authorized and broadcast with NIST ML-KEM/i,
+  /NIST PQC Migration Fund/i,
+  /NIST PQC ECOSYSTEM FUND GRANT/i,
+  /MLKEM768_SIG_/i,
+  /Guarantees quantum resistance for swap transaction signature/i,
+  /LIVE CRYPTO NEWS FEED/i,
+  /IMMUTABLE CRYPTOGRAPHIC ORDER RECORDS/i
 ];
 let failed = false;
 for (const file of targets) {
