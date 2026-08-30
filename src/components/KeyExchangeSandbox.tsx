@@ -432,7 +432,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
             <div className="flex items-center gap-3">
               <ShieldCheck className="w-6 h-6 text-[#00FF41]" />
               <h3 className="text-xl font-black text-white uppercase tracking-tight">
-                LIVE HYBRID ENCRYPTED CHANNEL VERIFICATION
+                LOCAL DEMONSTRATION ENCRYPTION CHECK
               </h3>
             </div>
             <span className="text-[10px] font-mono font-bold text-black bg-[#00FF41] px-3 py-1 uppercase tracking-widest">
@@ -465,7 +465,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
             <div className="bg-[#050505] border border-white/10 p-4 flex flex-col justify-center">
               <span className="text-[10px] font-mono uppercase tracking-widest text-white/50">KEY DERIVATION METHOD:</span>
               <span className="text-xs font-mono text-[#00FF41] font-bold mt-1">
-                HKDF-SHA256( ECDH_Secret || MLKEM_Secret )
+                Local demonstration key material (not ML-KEM hybrid derivation)
               </span>
             </div>
           </div>
@@ -490,7 +490,7 @@ export const KeyExchangeSandbox: React.FC<KeyExchangeSandboxProps> = ({ onAddLog
                   "{lastDecryptedText}"
                 </p>
                 <span className="text-[10px] text-[#00FF41] mt-2 block uppercase tracking-widest">
-                  ✓ GCM AUTHENTICATION TAG VERIFIED (100% MATCH)
+                  ✓ Local AES-GCM decryption completed in this demonstration
                 </span>
               </div>
             </div>
