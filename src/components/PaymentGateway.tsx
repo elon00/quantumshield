@@ -103,7 +103,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
   const generatePqcSignature = (): string => {
     const raw = new Uint8Array(32);
     crypto.getRandomValues(raw);
-    return `ML-KEM-768_SIG_${bytesToHex(raw)}`;
+    return `DEMO_NOT_CRYPTOGRAPHIC_${bytesToHex(raw)}`;
   };
 
   const handleSendPayment = async (e: React.FormEvent) => {
@@ -130,7 +130,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
     }
 
     setIsProcessing(true);
-    setStatusMsg({ type: 'info', text: 'Signing payment mandate with ML-KEM-768 post-quantum key...' });
+    setStatusMsg({ type: 'info', text: 'Preparing demonstration payment record — no cryptographic ML-KEM signature is created...' });
 
     setTimeout(async () => {
       try {
@@ -160,18 +160,18 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
 
         onAddLog({
           source: 'system',
-          message: `PQC Signed Payment Sent: ${numAmount} ${currency} to ${recipient.substring(0, 8)}...`,
+          message: `Demonstration payment recorded: ${numAmount} ${currency} to ${recipient.substring(0, 8)}...`,
           type: 'success',
           data: { txId: newTx.id, sigHex }
         });
 
         setStatusMsg({ 
           type: 'success', 
-          text: `Payment of ${numAmount} ${currency} successfully authorized and broadcast with NIST ML-KEM-768 signature!` 
+          text: `Payment of ${numAmount} ${currency} recorded in the demonstration workflow. No payment was broadcast and no ML-KEM signature was created.` 
         });
 
         setAmount('100');
-        setMemo('PQC Verified Transaction');
+        setMemo('Demonstration Transaction');
       } catch (err: any) {
         setStatusMsg({ type: 'error', text: 'Transaction signing failed: ' + (err?.message || err) });
       } finally {
@@ -182,7 +182,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
 
   const handleClaimGrant = async () => {
     setIsProcessing(true);
-    setStatusMsg({ type: 'info', text: 'Claiming NIST PQC Post-Quantum Infrastructure Grant ($2,500)...' });
+    setStatusMsg({ type: 'info', text: 'Adding a simulated grant record ($2,500) — no real grant claim is submitted...' });
 
     setTimeout(async () => {
       try {
@@ -194,7 +194,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
           amount: grantAmount,
           currency: 'USD',
           status: 'completed',
-          sender: 'NIST PQC Migration Reserve',
+          sender: 'Sample Grant Source',
           recipient: 'QuantumShield Vault (0x3A07)',
           timestamp: new Date().toLocaleTimeString(),
           memo: 'Post-Quantum Migration Ecosystem Incentive',
@@ -208,11 +208,11 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
 
         onAddLog({
           source: 'system',
-          message: `Claimed $2,500 PQC Migration Grant from NIST Reserve`,
+          message: `Recorded simulated $2,500 grant`,
           type: 'success'
         });
 
-        setStatusMsg({ type: 'success', text: 'Received $2,500 USD PQC Infrastructure Grant into your Vault!' });
+        setStatusMsg({ type: 'success', text: 'Simulated $2,500 grant added to the local demonstration balance.' });
       } catch (err: any) {
         setStatusMsg({ type: 'error', text: 'Grant claim failed.' });
       } finally {
@@ -231,13 +231,13 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
           <div>
             <div className="flex items-center gap-2 text-[#00FF41] font-mono text-xs font-bold uppercase tracking-widest">
               <ShieldCheck className="w-4 h-4" />
-              <span>POST-QUANTUM PAYMENT GATEWAY (ML-KEM-768 SIGNED)</span>
+              <span>PAYMENT WORKFLOW DEMONSTRATION (NO REAL SETTLEMENT)</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white mt-1">
-              FINANCIAL TRANSACTIONS & VAULT RESERVES
+              PAYMENT & VAULT WORKFLOW SANDBOX
             </h2>
             <p className="text-white/60 text-xs sm:text-sm max-w-2xl mt-1">
-              Send, receive, and audit cross-chain cryptocurrency and fiat transfers protected against Shor's algorithm via hybrid ML-KEM-768 key encapsulates and AES-256-GCM encryption.
+              This interface demonstrates payment workflow states using local/sample data. It does not execute fiat or blockchain transfers and does not implement ML-KEM signatures.
             </p>
           </div>
 
@@ -247,7 +247,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
             className="flex items-center gap-2 px-4 py-2 bg-[#050505] border border-white/20 hover:border-white text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer self-start md:self-auto"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>SYNC VAULT LEDGER</span>
+            <span>LOAD SAMPLE LEDGER</span>
           </button>
         </div>
 
@@ -263,7 +263,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
             </div>
             <div className="text-[10px] text-[#00FF41] font-mono flex items-center gap-1">
               <LockKeyhole className="w-3 h-3" />
-              <span>FDIC + PQC Vault Insured</span>
+              <span>DEMONSTRATION BALANCE — NOT INSURED</span>
             </div>
           </div>
 
@@ -291,7 +291,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
             </div>
             <div className="text-[10px] text-[#FF003C] font-mono flex items-center gap-1">
               <ShieldCheck className="w-3 h-3" />
-              <span>NIST Standard Utility Token</span>
+              <span>SAMPLE TOKEN — NOT A VERIFIED STANDARD</span>
             </div>
           </div>
         </div>
@@ -412,12 +412,12 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
 
                 <div className="p-3 bg-[#050505] border border-white/10 space-y-1 text-[10px] text-white/50">
                   <div className="flex justify-between">
-                    <span>SIGNATURE ALGORITHM:</span>
-                    <span className="text-[#00FF41] font-bold">NIST FIPS 203 ML-KEM-768</span>
+                    <span>RECORD STATUS:</span>
+                    <span className="text-[#00FF41] font-bold">DEMONSTRATION ONLY — NOT ML-KEM</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>SECURITY STATUS:</span>
-                    <span className="text-cyan-400 font-bold">SHOR-RESISTANT (QUANTUM SAFE)</span>
+                    <span>EXECUTION STATUS:</span>
+                    <span className="text-cyan-400 font-bold">NO REAL PAYMENT OR BLOCKCHAIN EXECUTION</span>
                   </div>
                 </div>
 
@@ -427,7 +427,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
                   className="w-full py-3 bg-[#00FF41] hover:bg-white text-black font-black uppercase tracking-widest transition-colors cursor-pointer flex items-center justify-center gap-2 text-sm"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{isProcessing ? 'AUTHORIZING & SIGNING...' : 'SEND QUANTUM-SIGNED PAYMENT'}</span>
+                  <span>{isProcessing ? 'AUTHORIZING & SIGNING...' : 'RUN PAYMENT DEMONSTRATION'}</span>
                 </button>
               </form>
             )}
@@ -439,7 +439,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
                   <div className="mx-auto w-12 h-12 bg-[#00FF41]/10 border border-[#00FF41] flex items-center justify-center text-[#00FF41]">
                     <ShieldCheck className="w-6 h-6" />
                   </div>
-                  <h4 className="font-bold text-white uppercase tracking-wider text-sm">YOUR PQC VAULT DEPOSIT ADDRESS</h4>
+                  <h4 className="font-bold text-white uppercase tracking-wider text-sm">SAMPLE VAULT IDENTIFIER</h4>
                   <p className="text-white/60 text-[11px]">
                     Share this post-quantum signed vault public key to receive USD, ETH, or PQC tokens directly into your encrypted account.
                   </p>
