@@ -397,7 +397,7 @@ export const CryptoExchangeHub: React.FC = () => {
 
           {/* User Portfolio Snapshot */}
           <div className="bg-[#050505] p-4 border border-amber-400/50 space-y-2 text-right shrink-0 min-w-[220px]">
-            <span className="text-[10px] text-amber-400 uppercase font-bold block">TOTAL PORTFOLIO BALANCE</span>
+            <span className="text-[10px] text-amber-400 uppercase font-bold block">SIMULATED PORTFOLIO BALANCE</span>
             <span className="text-2xl sm:text-3xl font-black text-white block">
               ${(portfolio.usd + portfolio.btc * 94250 + portfolio.eth * 3480 + portfolio.pqc * 14.85 + portfolio.sol * 215.8).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
@@ -439,7 +439,7 @@ export const CryptoExchangeHub: React.FC = () => {
             <span className="text-emerald-400 text-[10px] block font-bold">NIST Compliant</span>
           </div>
           <div className="bg-[#050505] p-2.5 border border-white/10">
-            <span className="text-white/50 block text-[9px] uppercase font-bold">PQC PROTECTED VAULTS</span>
+            <span className="text-white/50 block text-[9px] uppercase font-bold">SAMPLE PQC METRIC</span>
             <span className="text-emerald-400 font-bold text-sm">1,420 VAULTS</span>
             <span className="text-white/60 text-[10px] block">ML-KEM-768 Enforced</span>
           </div>
@@ -451,9 +451,9 @@ export const CryptoExchangeHub: React.FC = () => {
         {[
           { id: 'market', label: '1 // MARKET AGGREGATOR (GECKO/CMC)', icon: BarChart3 },
           { id: 'cex-dex', label: '2 // EXCHANGES & ORDER BOOK (BINANCE/UNISWAP)', icon: Building2 },
-          { id: 'swap', label: '3 // INSTANT PQC SWAP & TRADING', icon: Repeat },
+          { id: 'swap', label: '3 // SIMULATED SWAP WORKFLOW', icon: Repeat },
           { id: 'research', label: '4 // MESSARI RESEARCH & INTEL', icon: BookOpen },
-          { id: 'news', label: '5 // LIVE CRYPTO NEWS FEED', icon: Newspaper },
+          { id: 'news', label: '5 // SAMPLE NEWS DATA', icon: Newspaper },
           { id: 'ledger', label: '6 // TRANSACTIONAL LEDGER & AUDIT', icon: FileText }
         ].map(tab => {
           const Icon = tab.icon;
