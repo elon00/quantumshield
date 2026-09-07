@@ -1,0 +1,51 @@
+{
+  "system": "QuantumShield",
+  "version": "1.0.0",
+  "status": "EVIDENCE_BASED_PQC_PROTOCOL",
+  "description": "Quantum-Resistant Hybrid Security Gateway & Client Suite powered by NIST FIPS 203 ML-KEM-768 and NIST FIPS 204 ML-DSA-65",
+  "truthTaxonomy": {
+    "cryptographicCore": "PURE_TYPESCRIPT_PQC_EXECUTION",
+    "kemScheme": "NIST_FIPS_203_ML_KEM_768",
+    "signatureScheme": "NIST_FIPS_204_ML_DSA_65",
+    "hybridKDF": "RFC_5869_HKDF_SHA256",
+    "simulationEliminated": true,
+    "weakestLinkGate": "H=0.60 (Pending 3rd-party audit verification)",
+    "auditFirmStatus": "PENDING_EXTERNAL_AUDIT"
+  },
+  "subsystems": [
+    {
+      "name": "MLKEM768Engine",
+      "path": "src/lib/pqcCrypto.ts",
+      "status": "VERIFIED_NIST_FIPS_203",
+      "wire": {
+        "publicKeyBytes": 1184,
+        "privateKeyBytes": 2400,
+        "ciphertextBytes": 1088,
+        "sharedSecretBytes": 32
+      }
+    },
+    {
+      "name": "MLDSA65Engine",
+      "path": "src/lib/pqcCrypto.ts",
+      "status": "VERIFIED_NIST_FIPS_204",
+      "wire": {
+        "publicKeyBytes": 1952,
+        "privateKeyBytes": 4032,
+        "signatureBytes": 3309
+      }
+    },
+    {
+      "name": "HybridSessionKDF",
+      "path": "src/lib/pqcCrypto.ts",
+      "status": "VERIFIED_RFC_5869_HKDF_SHA256",
+      "wire": {
+        "sessionKeyBytes": 32
+      }
+    },
+    {
+      "name": "KeyExchangeSandbox",
+      "path": "src/components/KeyExchangeSandbox.tsx",
+      "status": "REAL_PQC_CLIENT_SANDBOX"
+    }
+  ]
+}

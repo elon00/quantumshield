@@ -1,7 +1,16 @@
 /**
- * Cryptographic Utility for Hybrid Post-Quantum Key Exchange
- * Combines X25519 (ECDH) + ML-KEM-768 (Crystals-Kyber) + HKDF-SHA256 + AES-256-GCM
+ * QuantumShield - Post-Quantum Cryptographic Engine
+ * Implements:
+ * - NIST FIPS 203 ML-KEM-768 (Lattice-based Key Encapsulation Mechanism)
+ * - NIST FIPS 204 ML-DSA-65 (Lattice-based Digital Signature Algorithm)
+ * - RFC 5869 HKDF-SHA256 Dual Hybrid Key Derivation (ECDH + ML-KEM)
+ * - AES-256-GCM Authenticated Encryption with Associated Data (AEAD)
  */
+
+import { ml_kem768 } from '@noble/post-quantum/ml-kem.js';
+import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js';
+import { hkdf } from '@noble/hashes/hkdf';
+import { sha256 } from '@noble/hashes/sha256';
 
 export function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes)
@@ -18,51 +27,137 @@ export function hexToBytes(hex: string): Uint8Array {
   return bytes;
 }
 
-export class MLKEM768Simulator {
-  PUBLIC_KEY_BYTES = 1184;
-  CIPHERTEXT_BYTES = 1088;
-  SHARED_SECRET_BYTES = 32;
+/**
+ * Real NIST FIPS 203 ML-KEM-768 Implementation
+ * Wire invariants:
+ * - Public Key: 1,184 bytes
+ * - Secret Key: 2,400 bytes
+ * - Ciphertext: 1,088 bytes
+ * - Shared Secret: 32 bytes
+ */
+export class MLKEM768Engine {
+  readonly PUBLIC_KEY_BYTES = 1184;
+  readonly PRIVATE_KEY_BYTES = 2400;
+  readonly CIPHERTEXT_BYTES = 1088;
+  readonly SHARED_SECRET_BYTES = 32;
 
-  async generateKeyPair(): Promise<{ publicKey: Uint8Array; privateKey: Uint8Array }> {
-    const rawEntropy = new Uint8Array(64);
-    crypto.getRandomValues(rawEntropy);
-    
-    const publicKey = new Uint8Array(this.PUBLIC_KEY_BYTES);
-    crypto.getRandomValues(publicKey);
-    publicKey.set(rawEntropy.slice(0, 32), 0);
-    
-    const privateKey = new Uint8Array(2400); // ML-KEM-768 private key length
-    crypto.getRandomValues(privateKey);
-    privateKey.set(rawEntropy, 0);
-
-    return { publicKey, privateKey };
-  }
-
-  async encapsulate(publicKey: Uint8Array): Promise<{ ciphertext: Uint8Array; sharedSecret: Uint8Array }> {
-    const sharedSecret = new Uint8Array(this.SHARED_SECRET_BYTES);
-    crypto.getRandomValues(sharedSecret);
-    
-    const ciphertext = new Uint8Array(this.CIPHERTEXT_BYTES);
-    crypto.getRandomValues(ciphertext);
-    // Embed deterministically bound entropy for simulation verification
-    ciphertext.set(sharedSecret.slice(0, 16), 0);
-    ciphertext.set(publicKey.slice(0, 16), 16);
-    
-    return { ciphertext, sharedSecret };
-  }
-
-  async decapsulate(ciphertext: Uint8Array, privateKey: Uint8Array): Promise<Uint8Array> {
-    const sharedSecret = new Uint8Array(this.SHARED_SECRET_BYTES);
-    if (ciphertext.length === this.CIPHERTEXT_BYTES) {
-      sharedSecret.set(ciphertext.slice(0, 16), 0);
-      sharedSecret.set(privateKey.slice(0, 16), 16);
+  /**
+   * Deterministic or CSPRNG Key Generation
+   * @param seed Optional 64-byte seed (d || z)
+   */
+  generateKeyPair(seed?: Uint8Array): { publicKey: Uint8Array; privateKey: Uint8Array } {
+    let keyPair;
+    if (seed) {
+      const formattedSeed = seed.length === 64 ? seed : new Uint8Array(64);
+      if (seed.length !== 64) formattedSeed.set(seed.slice(0, 64));
+      keyPair = ml_kem768.keygen(formattedSeed);
     } else {
-      crypto.getRandomValues(sharedSecret);
+      keyPair = ml_kem768.keygen();
     }
-    return sharedSecret;
+    return {
+      publicKey: keyPair.publicKey,
+      privateKey: keyPair.secretKey
+    };
+  }
+
+  /**
+   * Encapsulate a shared secret to the recipient's public key
+   * @param publicKey Recipient's 1,184-byte ML-KEM-768 public key
+   */
+  encapsulate(publicKey: Uint8Array): { ciphertext: Uint8Array; sharedSecret: Uint8Array } {
+    if (publicKey.length !== this.PUBLIC_KEY_BYTES) {
+      throw new Error(`Invalid ML-KEM-768 public key size: expected ${this.PUBLIC_KEY_BYTES}, received ${publicKey.length}`);
+    }
+    const result = ml_kem768.encapsulate(publicKey);
+    return {
+      ciphertext: result.cipherText,
+      sharedSecret: result.sharedSecret
+    };
+  }
+
+  /**
+   * Decapsulate shared secret using private key
+   * Follows FIPS 203 §7.3 implicit rejection on invalid ciphertexts
+   * @param ciphertext 1,088-byte ciphertext
+   * @param privateKey 2,400-byte private key
+   */
+  decapsulate(ciphertext: Uint8Array, privateKey: Uint8Array): Uint8Array {
+    if (ciphertext.length !== this.CIPHERTEXT_BYTES) {
+      throw new Error(`Invalid ML-KEM-768 ciphertext size: expected ${this.CIPHERTEXT_BYTES}, received ${ciphertext.length}`);
+    }
+    if (privateKey.length !== this.PRIVATE_KEY_BYTES) {
+      throw new Error(`Invalid ML-KEM-768 secret key size: expected ${this.PRIVATE_KEY_BYTES}, received ${privateKey.length}`);
+    }
+    return ml_kem768.decapsulate(ciphertext, privateKey);
   }
 }
 
+/**
+ * Backward compatibility alias so existing components seamlessly execute real lattice math
+ */
+export class MLKEM768Simulator extends MLKEM768Engine {}
+
+/**
+ * Real NIST FIPS 204 ML-DSA-65 Implementation
+ * Wire invariants:
+ * - Public Key: 1,952 bytes
+ * - Secret Key: 4,032 bytes
+ * - Signature: 3,309 bytes
+ */
+export class MLDSA65Engine {
+  readonly PUBLIC_KEY_BYTES = 1952;
+  readonly PRIVATE_KEY_BYTES = 4032;
+  readonly SIGNATURE_BYTES = 3309;
+
+  /**
+   * Generate keypair from optional 32-byte seed or CSPRNG
+   */
+  generateKeyPair(seed?: Uint8Array): { publicKey: Uint8Array; privateKey: Uint8Array } {
+    let keyPair;
+    if (seed) {
+      const formattedSeed = seed.length === 32 ? seed : seed.slice(0, 32);
+      keyPair = ml_dsa65.keygen(formattedSeed);
+    } else {
+      keyPair = ml_dsa65.keygen();
+    }
+    return {
+      publicKey: keyPair.publicKey,
+      privateKey: keyPair.secretKey
+    };
+  }
+
+  /**
+   * Sign message using ML-DSA-65 secret key
+   */
+  sign(message: Uint8Array, privateKey: Uint8Array): Uint8Array {
+    if (privateKey.length !== this.PRIVATE_KEY_BYTES) {
+      throw new Error(`Invalid ML-DSA-65 secret key size: expected ${this.PRIVATE_KEY_BYTES}, received ${privateKey.length}`);
+    }
+    return ml_dsa65.sign(message, privateKey);
+  }
+
+  /**
+   * Verify signature using ML-DSA-65 public key
+   */
+  verify(signature: Uint8Array, message: Uint8Array, publicKey: Uint8Array): boolean {
+    if (publicKey.length !== this.PUBLIC_KEY_BYTES) {
+      return false;
+    }
+    if (signature.length !== this.SIGNATURE_BYTES) {
+      return false;
+    }
+    try {
+      return ml_dsa65.verify(signature, message, publicKey);
+    } catch {
+      return false;
+    }
+  }
+}
+
+/**
+ * Derive Hybrid Session Key using RFC 5869 HKDF-SHA256
+ * Combines Classical ECDH Shared Secret (X25519/P-256) + NIST ML-KEM-768 Shared Secret
+ */
 export async function deriveHybridSessionKey(
   ecdhSecret: Uint8Array,
   pqSecret: Uint8Array,
@@ -75,23 +170,13 @@ export async function deriveHybridSessionKey(
   const encoder = new TextEncoder();
   const info = encoder.encode("QuantumShield-Hybrid-X25519-MLKEM768-HKDF-SHA256");
 
-  const keyMaterial = await crypto.subtle.importKey(
-    "raw",
-    combinedSecret,
-    { name: "HKDF" },
-    false,
-    ["deriveBits"]
-  );
-
-  const derivedBits = await crypto.subtle.deriveBits(
-    { name: "HKDF", hash: "SHA-256", salt: salt, info: info },
-    keyMaterial,
-    256
-  );
-
-  return new Uint8Array(derivedBits);
+  // Pure cryptographic HKDF-SHA256
+  return hkdf(sha256, combinedSecret, salt, info, 32);
 }
 
+/**
+ * AES-256-GCM Authenticated Encryption
+ */
 export async function encryptAESGCM(
   plaintext: string,
   keyBytes: Uint8Array
@@ -118,6 +203,9 @@ export async function encryptAESGCM(
   };
 }
 
+/**
+ * AES-256-GCM Authenticated Decryption
+ */
 export async function decryptAESGCM(
   ciphertextHex: string,
   ivHex: string,
