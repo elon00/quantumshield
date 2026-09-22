@@ -25,3 +25,5 @@ jobs:
         run: npm ci
       - name: Run full verification pipeline
         run: npm test
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
