@@ -1,0 +1,37 @@
+name: Temporary Lockfile Repair
+
+on:
+  push:
+    branches: [production-hardening-2026-09-22]
+
+permissions:
+  contents: write
+
+jobs:
+  repair-lockfile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: production-hardening-2026-09-22
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Regenerate lockfile with advisory fixes
+        run: |
+          npm audit fix --package-lock-only
+          npm audit --omit=dev --audit-level=high
+      - name: Commit repaired lockfile
+        run: |
+          if git diff --quiet -- package-lock.json package.json; then
+            echo "No lockfile changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json package.json
+          git commit -m "fix(deps): apply npm audit lockfile fixes"
+          git push origin HEAD:production-hardening-2026-09-22
