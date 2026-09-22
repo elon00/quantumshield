@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Standalone Cryptographic Auditor for QuantumShield
+ * Standalone Cryptographic Integration Auditor for QuantumShield
  * Verifies 23 Invariants across:
  * - RFC 5869 HKDF-SHA256
  * - NIST FIPS 203 ML-KEM-768
  * - NIST FIPS 204 ML-DSA-65
- * - Wycheproof Negative Bit-Flip Attacks
+ * - Repository-defined negative/tamper tests
  * - Hybrid Conjunction
  */
 
@@ -18,6 +18,7 @@ import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js';
 console.log('=====================================================================');
 console.log('⚡ QUANTUMSHIELD // STANDALONE CRYPTOGRAPHIC AUDITOR');
 console.log('=====================================================================\n');
+console.log('Repository integration checks only; no independent audit or official external PQC vector provenance is implied.\n');
 
 let assertionCount = 0;
 function pass(desc) {
@@ -107,17 +108,17 @@ try {
   assert.strictEqual(verified, true);
   pass('ML-DSA-65 genuine signature verified successfully');
 
-  console.log('\n▶ [TIER 6] Wycheproof Negative & Adversarial Tests:');
+  console.log('\n▶ [TIER 6] Repository-defined Adversarial Negative Tests:');
   const tamperedSig = new Uint8Array(sig);
   tamperedSig[42] ^= 0x01;
   const badSigVer = ml_dsa65.verify(tamperedSig, msg, dsaPair1.publicKey);
   assert.strictEqual(badSigVer, false);
-  pass('Wycheproof: Bit-flipped signature rejected cleanly');
+  pass('Bit-flipped signature rejected cleanly');
 
   const tamperedMsg = Buffer.from('QuantumShield Core Auditor Signature Verification Payload!');
   const badMsgVer = ml_dsa65.verify(sig, tamperedMsg, dsaPair1.publicKey);
   assert.strictEqual(badMsgVer, false);
-  pass('Wycheproof: Altered message rejected cleanly');
+  pass('Altered message rejected cleanly');
 
   const shortSig = sig.slice(0, 3200);
   let shortSigRejected = false;
@@ -127,7 +128,7 @@ try {
     shortSigRejected = true;
   }
   assert.strictEqual(shortSigRejected, true);
-  pass('Wycheproof: Truncated signature rejected cleanly');
+  pass('Truncated signature rejected cleanly');
 
   const badPK = dsaPair1.publicKey.slice(0, 1900);
   let badPKRejected = false;
@@ -137,7 +138,7 @@ try {
     badPKRejected = true;
   }
   assert.strictEqual(badPKRejected, true);
-  pass('Wycheproof: Malformed public key size rejected cleanly');
+  pass('Malformed public key size rejected cleanly');
 
   console.log('\n▶ [TIER 7] Hybrid Session Key Derivation Conformance:');
   const classicalSecret = new Uint8Array(32).fill(0x11);
@@ -150,7 +151,7 @@ try {
   pass('Hybrid session key fails-closed on unauthenticated KEM material');
 
   console.log('\n=====================================================================');
-  console.log(`🏆 ALL ${assertionCount}/23 CRYPTOGRAPHIC ASSERTIONS PASSED CLEANLY`);
+  console.log(`ALL ${assertionCount}/23 REPOSITORY CRYPTOGRAPHIC ASSERTIONS PASSED`);
   console.log('=====================================================================\n');
   process.exit(0);
 } catch (err) {
