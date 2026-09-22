@@ -1,140 +1,117 @@
 /**
- * QuantumShield — URS Evidence Certificate Generator
- * Runs the full 5-tier preflight audit, computes the Master Reality Hash,
- * and signs the certificate using NIST FIPS 204 ML-DSA-65.
+ * Generate a repository-internal signed evidence report.
+ *
+ * The ML-DSA signature authenticates this generated report only. It does not
+ * make the report an independent audit, FIPS validation, legal certification,
+ * or production-readiness certificate.
  */
-
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
-import path from 'node:path';
 import { sha256 } from '@noble/hashes/sha256';
 import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js';
 
-console.log('╔══════════════════════════════════════════════════════════════════════════╗');
-console.log('║       QUANTUMSHIELD — GENERATING URS EVIDENCE CERTIFICATE               ║');
-console.log('╚══════════════════════════════════════════════════════════════════════════╝\n');
-
-function run(cmd: string, title: string) {
-  console.log(`▶ ${title}...`);
+function run(command: string, args: string[], title: string): void {
+  console.log(`▶ ${title}`);
   try {
-    const out = execSync(cmd, { stdio: 'pipe' }).toString();
-    console.log(`  ✅ ${title}: PASSED\n`);
-    return out;
-  } catch (e: any) {
-    console.error(`  ❌ ${title}: FAILED!`);
-    console.error(e.stdout ? e.stdout.toString() : e.message);
+    execFileSync(command, args, { stdio: 'inherit' });
+  } catch {
+    console.error(`FAILED: ${title}`);
     process.exit(1);
   }
 }
 
-// 1. Truth & config checks
-run('node scripts/check-truth.cjs', '[1/5] Running Claim Honesty & Truth Verifier');
+console.log('QuantumShield — generating repository-internal evidence report');
 
-// 2. TypeScript compilation
-run('npx tsc --noEmit', '[2/5] Running Strict TypeScript Check (tsc --noEmit)');
+run(process.execPath, ['scripts/check-truth.cjs'], 'Truth verifier');
+run(process.execPath, ['scripts/check-status.cjs'], 'Status verifier');
+run('npx', ['tsc', '--noEmit'], 'TypeScript check');
+run('npx', ['tsx', 'src/tests/official-nist-vectors.test.ts'], 'PQC integration/adversarial tests');
+run(process.execPath, ['scripts/audit-crypto.mjs'], 'Cryptographic integration audit');
+run('npx', ['tsx', 'scripts/reality-universal.ts'], 'Repository-internal verification gates');
 
-// 3. Official NIST Vectors
-run('npx tsx src/tests/official-nist-vectors.test.ts', '[3/5] Running Official NIST & Wycheproof Test Suite');
+const reporterSeed = new Uint8Array(32).fill(0xaa);
+const reporter = ml_dsa65.keygen(reporterSeed);
 
-// 4. Standalone Crypto Audit
-run('node scripts/audit-crypto.mjs', '[4/5] Running Standalone Cryptographic Auditor');
-
-// 5. Universal Reality Engine
-run('npx tsx scripts/reality-universal.ts', '[5/5] Running Universal Reality Engine');
-
-// Generate Deterministic Root Key for Certificate Signing
-const rootSeed = new Uint8Array(32).fill(0xaa);
-const certAuthority = ml_dsa65.keygen(rootSeed);
-
-const certificatePayload = {
+const payload = {
   protocol: 'QuantumShield',
-  standard: 'UNIVERSAL_REALITY_SYSTEM_v1.0',
-  timestamp: new Date().toISOString(),
-  truthTaxonomy: {
-    cryptographicCore: 'PURE_TYPESCRIPT_PQC_EXECUTION',
-    kemScheme: 'NIST_FIPS_203_ML_KEM_768',
-    signatureScheme: 'NIST_FIPS_204_ML_DSA_65',
-    hybridKDF: 'RFC_5869_HKDF_SHA256',
-    failClosedConjunction: true,
-    simulationEliminated: true
+  reportType: 'REPOSITORY_INTERNAL_EVIDENCE',
+  generatedAt: new Date().toISOString(),
+  projectStatus: 'RESEARCH_PQC_INTEGRATION_PROTOTYPE',
+  evidence: {
+    applicationLayerMlKemIntegrationTested: true,
+    applicationLayerMlDsaIntegrationTested: true,
+    rfc5869KnownAnswerTested: true,
+    repositoryAdversarialCasesTested: true,
+    serverHandshakeUsesRealMlKem: false,
   },
-  evidenceScores: {
-    E_ExecutionReality: 1.0,
-    I_InputReality: 1.0,
-    O_OutputImpact: 1.0,
-    V_IndependentVerification: 1.0,
-    R_Reproducibility: 1.0,
-    C_ClaimHonesty: 1.0,
-    P_Provenance: 1.0,
-    F_FailClosedSafety: 1.0,
-    A_AdversarialSecurity: 1.0,
-    H_ExternalAudit: 0.6
+  limitations: {
+    independentVerification: false,
+    externalSecurityAudit: false,
+    fipsModuleValidation: false,
+    officialNistPqcKatProvenance: false,
+    wycheproofCorpusImported: false,
+    productionCertification: false,
   },
-  weakestLinkScore: 6.0,
-  cumulativeAverage: 9.6,
-  status: 'EVIDENCE_BASED_PQC_PROTOCOL',
-  certificationAuthority: {
-    scheme: 'ML-DSA-65',
-    publicKeyHex: Buffer.from(certAuthority.publicKey).toString('hex')
-  }
+  reporter: {
+    signatureScheme: 'ML-DSA-65 integration',
+    publicKeyHex: Buffer.from(reporter.publicKey).toString('hex'),
+    note:
+      'This key belongs to the repository-generated report process and is not an independent certification authority.',
+  },
 };
 
-const payloadBytes = Buffer.from(JSON.stringify(certificatePayload, null, 2));
-const masterHash = Buffer.from(sha256(payloadBytes)).toString('hex');
-const certSignature = Buffer.from(ml_dsa65.sign(payloadBytes, certAuthority.secretKey)).toString('hex');
+const canonical = Buffer.from(JSON.stringify(payload));
+const sha256Hex = Buffer.from(sha256(canonical)).toString('hex');
+const signatureHex = Buffer.from(
+  ml_dsa65.sign(canonical, reporter.secretKey)
+).toString('hex');
 
-const finalCertificate = {
-  ...certificatePayload,
-  masterHash,
-  certificateSignature: certSignature
-};
+const report = { ...payload, sha256: sha256Hex, signatureHex };
 
 fs.mkdirSync('reality', { recursive: true });
 fs.mkdirSync('docs/reality', { recursive: true });
+fs.writeFileSync(
+  'reality/URS_EVIDENCE_CERTIFICATE.json',
+  JSON.stringify(report, null, 2)
+);
 
-fs.writeFileSync('reality/URS_EVIDENCE_CERTIFICATE.json', JSON.stringify(finalCertificate, null, 2));
+const markdown = `# QuantumShield — Internal Evidence Report
 
-const markdownSummary = `# 🛡️ QuantumShield — Universal Reality Evidence Certificate
+Generated: \`${payload.generatedAt}\`  
+SHA-256: \`${sha256Hex}\`  
+ML-DSA signature length: \`${signatureHex.length / 2} bytes\`
 
-**Sealed Timestamp**: \`${finalCertificate.timestamp}\`  
-**Master Reality Hash (SHA-256)**: \`${masterHash}\`  
-**Certification Authority (ML-DSA-65)**: \`${finalCertificate.certificationAuthority.publicKeyHex.substring(0, 64)}...\`  
-**NIST ML-DSA-65 Signature**: \`${certSignature.substring(0, 64)}... (${certSignature.length / 2} bytes)\`
+## Repository checks executed
 
----
+- truth/status verification
+- TypeScript type checking
+- application-layer ML-KEM / ML-DSA integration checks
+- repository-defined adversarial cases
+- RFC 5869 HKDF known-answer test
+- repository-internal reality gates
 
-## 🔬 Evidence Scores Across 10 Reality Dimensions
+## Important boundary
 
-| Dimension | Metric | Score | Proof Method |
-|:---|:---|:---:|:---|
-| **E** | Execution Reality | **1.0 / 1.0** | Real pure-TS lattice arithmetic executing in browser & node |
-| **I** | Input / Data Reality | **1.0 / 1.0** | Valid curve points, seeds, and NIST ACVP KAT test vectors |
-| **O** | Output Real Impact | **1.0 / 1.0** | Working authenticated ciphertext & digital signatures |
-| **V** | Independent Verification | **1.0 / 1.0** | Standalone 23-assertion auditor passing independently |
-| **R** | Reproducibility | **1.0 / 1.0** | RFC 5869 & FIPS 203/204 byte-for-byte exact derivation |
-| **C** | Claim Honesty | **1.0 / 1.0** | Zero unverified claims; strict truth verification enforced |
-| **P** | Provenance | **1.0 / 1.0** | Direct mathematical lineage from NIST FIPS 203 & FIPS 204 |
-| **F** | Fail-Closed Safety | **1.0 / 1.0** | Implicit rejection & 1-bit tampering strictly aborted |
-| **A** | Adversarial Security | **1.0 / 1.0** | Wycheproof negative attack test suite passed |
-| **H** | External Audit | **0.6 / 1.0** | Pending external third-party security firm engagement |
+The current Express \`/api/pqc/handshake\` uses real X25519 and HKDF but
+**does not implement ML-KEM on the server**. It uses explicitly labeled
+PQ-shaped placeholder data.
 
----
+## Limitations
 
-## ⚖️ Universal 10/10 Law Verdict
+This report is created and signed by this repository. It is **not**:
 
-$$\\text{Feature Reality} = \\prod_{i=1}^{9} Gate_i = 1.0 \\implies \\text{VERIFIED PQC PROTOCOL}$$
-$$\\text{Universal Weakest-Link Score} = \\min(E, I, O, V, R, C, P, F, A, H) \\times 10 = 6.0 / 10$$
-$$\\text{Internal Automated Profile} = 10.0 / 10$$
+- an independent security or cryptographic audit;
+- FIPS validation of QuantumShield as a module;
+- proof of official NIST PQC KAT/ACVP vector execution;
+- proof that Project Wycheproof vectors were imported;
+- a production-readiness certificate.
+
+The ML-DSA signature authenticates the generated report only.
 `;
 
-fs.writeFileSync('docs/reality/URS_EVIDENCE_CERTIFICATE.md', markdownSummary);
+fs.writeFileSync('docs/reality/URS_EVIDENCE_CERTIFICATE.md', markdown);
 
-console.log('══════════════════════════════════════════════════════════════════════════');
-console.log('🏆 QUANTUMSHIELD — URS EVIDENCE CERTIFICATE GENERATED');
-console.log('══════════════════════════════════════════════════════════════════════════');
-console.log(`  Multiplicative Feature Reality:    1.0 / 1.0 (VERIFIED)`);
-console.log(`  Universal Weakest-Link (URS_10):   6.0 / 10 (Bottleneck: H = 0.6)`);
-console.log(`  Cumulative Dimension Average:      9.6 / 10`);
-console.log(`  Master Reality Hash (SHA-256):     ${masterHash}`);
-console.log(`  JSON Certificate:                  reality/URS_EVIDENCE_CERTIFICATE.json`);
-console.log('══════════════════════════════════════════════════════════════════════════\n');
+console.log('Internal evidence report generated');
+console.log(`SHA-256: ${sha256Hex}`);
+console.log('Independent verification: NOT CLAIMED');
+console.log('Production certification: NOT CLAIMED');
