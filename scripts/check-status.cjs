@@ -2,12 +2,13 @@
 const fs = require("fs");
 const status = fs.readFileSync("SECURITY_STATUS.md", "utf8");
 const required = [
-  "RESEARCH / PROTOTYPE — NOT CRYPTOGRAPHICALLY CERTIFIED",
-  "ML-KEM-768 | Not evidenced as implemented",
-  "ML-DSA | Not evidenced as implemented",
-  "Hybrid PQC interoperability | Not evidenced",
-  "Cryptographic audit | Not evidenced",
-  "Production deployment | Not evidenced by CI alone"
+  "RESEARCH / PQC INTEGRATION PROTOTYPE — NOT CRYPTOGRAPHICALLY CERTIFIED",
+  "ML-KEM-768 application-layer integration",
+  "ML-DSA-65 application-layer integration",
+  "Server-side ML-KEM handshake | **Not implemented**",
+  "Official NIST ACVP/KAT vectors | **Not claimed**",
+  "Independent cryptographic audit | **Not completed**",
+  "Production security certification | **Not claimed**"
 ];
 for (const item of required) {
   if (!status.includes(item)) {
