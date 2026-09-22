@@ -1,22 +1,23 @@
 {
   "system": "QuantumShield",
-  "version": "1.0.0",
-  "status": "EVIDENCE_BASED_PQC_PROTOCOL",
-  "description": "Quantum-Resistant Hybrid Security Gateway & Client Suite powered by NIST FIPS 203 ML-KEM-768 and NIST FIPS 204 ML-DSA-65",
+  "version": "1.1.0",
+  "status": "RESEARCH_PQC_INTEGRATION_PROTOTYPE",
+  "description": "Post-quantum migration research prototype with application-layer ML-KEM/ML-DSA integration and an explicitly non-ML-KEM server handshake demonstration.",
   "truthTaxonomy": {
-    "cryptographicCore": "PURE_TYPESCRIPT_PQC_EXECUTION",
-    "kemScheme": "NIST_FIPS_203_ML_KEM_768",
-    "signatureScheme": "NIST_FIPS_204_ML_DSA_65",
-    "hybridKDF": "RFC_5869_HKDF_SHA256",
-    "simulationEliminated": true,
-    "weakestLinkGate": "H=0.60 (Pending 3rd-party audit verification)",
-    "auditFirmStatus": "PENDING_EXTERNAL_AUDIT"
+    "cryptographicLibrary": "APPLICATION_LAYER_ML_KEM_768_AND_ML_DSA_65_INTEGRATION",
+    "serverHandshake": "X25519_PLUS_HKDF_WITH_PQ_PLACEHOLDER_NOT_ML_KEM",
+    "independentAudit": false,
+    "fipsValidatedModule": false,
+    "officialNistKatProvenance": false,
+    "wycheproofCorpusImported": false,
+    "productionCertified": false,
+    "simulationEliminated": false
   },
   "subsystems": [
     {
       "name": "MLKEM768Engine",
       "path": "src/lib/pqcCrypto.ts",
-      "status": "VERIFIED_NIST_FIPS_203",
+      "status": "REPOSITORY_INTEGRATION_TESTED_NOT_FIPS_VALIDATED",
       "wire": {
         "publicKeyBytes": 1184,
         "privateKeyBytes": 2400,
@@ -27,7 +28,7 @@
     {
       "name": "MLDSA65Engine",
       "path": "src/lib/pqcCrypto.ts",
-      "status": "VERIFIED_NIST_FIPS_204",
+      "status": "REPOSITORY_INTEGRATION_TESTED_NOT_FIPS_VALIDATED",
       "wire": {
         "publicKeyBytes": 1952,
         "privateKeyBytes": 4032,
@@ -37,15 +38,20 @@
     {
       "name": "HybridSessionKDF",
       "path": "src/lib/pqcCrypto.ts",
-      "status": "VERIFIED_RFC_5869_HKDF_SHA256",
+      "status": "REPOSITORY_TESTED_HELPER_NOT_PROTOCOL_CERTIFICATION",
       "wire": {
         "sessionKeyBytes": 32
       }
     },
     {
-      "name": "KeyExchangeSandbox",
-      "path": "src/components/KeyExchangeSandbox.tsx",
-      "status": "REAL_PQC_CLIENT_SANDBOX"
+      "name": "ExpressHandshake",
+      "path": "server.ts",
+      "status": "DEMONSTRATION_X25519_HKDF_PQ_PLACEHOLDER_NOT_ML_KEM"
+    },
+    {
+      "name": "FinancialAndExchangeUI",
+      "path": "src/components",
+      "status": "SIMULATION_DEMO_NO_REAL_SETTLEMENT"
     }
   ]
 }
