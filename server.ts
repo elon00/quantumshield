@@ -92,6 +92,13 @@ app.get("/api/health", (req, res) => {
 
 // 2. Server-side PQC Key Exchange endpoint
 app.post("/api/pqc/handshake", (req, res) => {
+  if (IS_PRODUCTION) {
+    return res.status(503).json({
+      error: "server-side hybrid handshake is disabled in production until real interoperable ML-KEM is implemented and reviewed",
+      mode: "PRODUCTION_BLOCKED_PLACEHOLDER_PQC"
+    });
+  }
+
   try {
     const { clientX25519Hex, clientMLKEMHex, action, sessionId } = req.body;
 
@@ -514,7 +521,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[QuantumShield Server] Running on http://0.0.0.0:${PORT}`);
+    console.log(`[QuantumShield Server] Listening on http://0.0.0.0:${PORT}; server-side placeholder PQ handshake is blocked in production`);
   });
 }
 

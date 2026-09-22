@@ -11,7 +11,7 @@
 | ML-KEM-768 application-layer integration | Repository-tested through `@noble/post-quantum`; application is not FIPS-validated |
 | ML-DSA-65 application-layer integration | Repository-tested through `@noble/post-quantum`; application is not FIPS-validated |
 | X25519 + HKDF server path | Implemented in Node `crypto` |
-| Server-side ML-KEM handshake | **Not implemented**; current server uses explicitly labeled PQ-shaped placeholder material |
+| Server-side ML-KEM handshake | **Not implemented**; development-only placeholder path exists, and production mode now fails closed with HTTP 503 |
 | Hybrid helper logic | Client/library derivation helper is repository-tested; production protocol interoperability is not independently verified |
 | Official NIST ACVP/KAT vectors | **Not claimed** for locally generated PQC seeds |
 | Project Wycheproof corpus | **Not claimed** |
@@ -34,4 +34,4 @@ Do not describe a release as **quantum-safe**, **FIPS validated**, **independent
 7. independent security/cryptographic review;
 8. deployment threat model, secrets management and operational controls.
 
-Until those requirements are satisfied, use: **RESEARCH / PQC INTEGRATION PROTOTYPE**.
+Until those requirements are satisfied, use: **RESEARCH / PQC INTEGRATION PROTOTYPE**. Production deployments must not enable or describe the development placeholder handshake as ML-KEM.
