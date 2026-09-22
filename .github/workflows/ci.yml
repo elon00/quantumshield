@@ -5,28 +5,23 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   verify:
-    name: Truth, security and build gates
+    name: Full truth, crypto, type and build gates
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
+    timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
-      - name: Install dependencies
+      - name: Install locked dependencies
         run: npm ci
-
-      - name: Run verification pipeline
-        run: npm run check:release
+      - name: Run full verification pipeline
+        run: npm test
