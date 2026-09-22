@@ -7,7 +7,8 @@ import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js';
 import { MLKEM768Engine, MLDSA65Engine, deriveHybridSessionKey } from '../lib/pqcCrypto.js';
 
 console.log('=====================================================================');
-console.log('🛡️ QUANTUMSHIELD // OFFICIAL NIST & WYCHEPROOF TEST SUITE');
+console.log('QUANTUMSHIELD // STANDARDS INTEGRATION & ADVERSARIAL TEST SUITE');
+console.log('PQC seeds/cases below are repository-defined unless an external vector source is explicitly identified.');
 console.log('=====================================================================\n');
 
 // -----------------------------------------------------------------------------
@@ -66,7 +67,7 @@ corruptedCiphertext[42] ^= 0xff; // Flip bits
 const rejectedSS = kemEngine.decapsulate(corruptedCiphertext, kemPair.privateKey);
 assert.strictEqual(rejectedSS.length, 32, 'Implicit rejection must produce 32-byte pseudo-random key');
 assert.notDeepStrictEqual(Buffer.from(rejectedSS), Buffer.from(senderSS), 'Corrupted ciphertext must NEVER match genuine shared secret');
-console.log('  ✅ FIPS 203 §7.3: Returns pseudo-random key leaking 0 oracle bits\n');
+console.log('  ✅ Corrupted ciphertext produced a distinct 32-byte decapsulation result\n');
 
 // -----------------------------------------------------------------------------
 // [TIER 5] NIST FIPS 204 ML-DSA-65 Wire Invariants
@@ -92,9 +93,9 @@ assert.strictEqual(isValid, true, 'Genuine ML-DSA-65 signature must verify succe
 console.log('  ✅ ML-DSA-65 genuine signature verified (3,309 bytes)\n');
 
 // -----------------------------------------------------------------------------
-// [TIER 7] Wycheproof Negative & Adversarial Tests
+// [TIER 7] Repository-defined adversarial negative tests
 // -----------------------------------------------------------------------------
-console.log('[7/8] Project Wycheproof Negative & Adversarial Tests:');
+console.log('[7/8] Repository-defined adversarial negative tests:');
 // 1. Bit-flip in signature
 const corruptedSig = new Uint8Array(signature);
 corruptedSig[100] ^= 0x01;
@@ -107,7 +108,7 @@ assert.strictEqual(dsaEngine.verify(signature, tamperedMessage, dsaPair.publicKe
 // 3. Truncated signature
 const truncatedSig = signature.slice(0, 3000);
 assert.strictEqual(dsaEngine.verify(truncatedSig, message, dsaPair.publicKey), false, 'Truncated signature must be rejected');
-console.log('  ✅ Wycheproof: Bit-flip tampering strictly rejected\n');
+console.log('  ✅ Repository-defined bit-flip/message/truncation cases rejected\n');
 
 // -----------------------------------------------------------------------------
 // [TIER 8] Dual Hybrid Session Key Derivation (ECDH + ML-KEM)
@@ -119,5 +120,5 @@ assert.strictEqual(hybridKey.length, 32, 'Hybrid derived key must be 32 bytes (2
 console.log('  ✅ Dual Hybrid Session Key derived successfully (32 bytes)\n');
 
 console.log('=====================================================================');
-console.log('🏆 ALL 8 QUANTUMSHIELD NIST, WYCHEPROOF & HYBRID CONJUNCTION TESTS PASSED');
+console.log('ALL 8 QUANTUMSHIELD STANDARDS-INTEGRATION, ADVERSARIAL & HYBRID TESTS PASSED');
 console.log('=====================================================================\n');
