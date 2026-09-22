@@ -17,7 +17,7 @@ import {
   Receipt
 } from 'lucide-react';
 import { PaymentTransaction, LogEntry } from '../types';
-import { bytesToHex } from '../lib/pqcCrypto';
+import { bytesToHex } from '../lib/pqcCrypto'; // encoding helper only; demo tags below are not signatures
 import { savePaymentTransactionToFirestore, fetchPaymentTransactionsFromFirestore } from '../lib/firebase';
 
 interface PaymentGatewayProps {
@@ -101,7 +101,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
     loadTransactions();
   }, []);
 
-  const generatePqcSignature = (): string => {
+  const generateDemoReceiptTag = (): string => {
     const raw = new Uint8Array(32);
     crypto.getRandomValues(raw);
     return `DEMO_NOT_CRYPTOGRAPHIC_${bytesToHex(raw)}`;
@@ -135,7 +135,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
 
     setTimeout(async () => {
       try {
-        const sigHex = generatePqcSignature();
+        const sigHex = generateDemoReceiptTag();
         const newTx: PaymentTransaction = {
           id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
           type: 'transfer',
@@ -188,7 +188,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
     setTimeout(async () => {
       try {
         const grantAmount = 2500;
-        const sigHex = generatePqcSignature();
+        const sigHex = generateDemoReceiptTag();
         const grantTx: PaymentTransaction = {
           id: `grant_${Date.now()}`,
           type: 'grant',
@@ -560,7 +560,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({ onAddLog }) => {
                       )}
                       {tx.pqcSignatureHex && (
                         <div className="mt-1 p-1 bg-black text-[9px] text-cyan-400 font-mono truncate border border-white/10">
-                          SIG: {tx.pqcSignatureHex}
+                          DEMO TAG: {tx.pqcSignatureHex}
                         </div>
                       )}
                     </div>
