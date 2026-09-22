@@ -24,6 +24,33 @@ app.use((req, res, next) => {
 });
 app.use(express.json({ limit: "256kb" }));
 
+// Lightweight per-IP API throttling for the prototype server. Production
+// deployments should move this to an edge/gateway or shared rate-limit store.
+const apiRateBuckets = new Map<string, { windowStart: number; count: number }>();
+const API_REQUESTS_PER_MINUTE = Math.max(
+  10,
+  Math.min(1000, Number(process.env.API_REQUESTS_PER_MINUTE || 120))
+);
+app.use("/api", (req, res, next) => {
+  const now = Date.now();
+  const key = req.ip || req.socket.remoteAddress || "unknown";
+  let bucket = apiRateBuckets.get(key);
+  if (!bucket || now - bucket.windowStart >= 60_000) {
+    bucket = { windowStart: now, count: 0 };
+    apiRateBuckets.set(key, bucket);
+  }
+  bucket.count += 1;
+  if (bucket.count > API_REQUESTS_PER_MINUTE) {
+    return res.status(429).json({ error: "rate limit exceeded" });
+  }
+  if (apiRateBuckets.size > 10_000) {
+    for (const [entryKey, entry] of apiRateBuckets) {
+      if (now - entry.windowStart >= 120_000) apiRateBuckets.delete(entryKey);
+    }
+  }
+  next();
+});
+
 // In-memory session cache for server key state verification
 const activeHandshakeSessions = new Map<string, any>();
 const MAX_HANDSHAKE_SESSIONS = 1000;
@@ -73,8 +100,21 @@ app.post("/api/pqc/handshake", (req, res) => {
       if (clientX25519Hex && !/^[0-9a-fA-F]{64}$/.test(clientX25519Hex)) {
         return res.status(400).json({ error: "clientX25519Hex must be exactly 32 bytes encoded as hex" });
       }
-      if (clientMLKEMHex && !/^[0-9a-fA-F]+$/.test(clientMLKEMHex)) {
-        return res.status(400).json({ error: "clientMLKEMHex must be hexadecimal when supplied" });
+      if (
+        clientMLKEMHex &&
+        (!/^[0-9a-fA-F]+$/.test(clientMLKEMHex) || clientMLKEMHex.length > 2368)
+      ) {
+        return res.status(400).json({
+          error: "clientMLKEMHex must be hexadecimal and at most 1,184 bytes when supplied"
+        });
+      }
+      if (
+        sessionId !== undefined &&
+        (typeof sessionId !== "string" ||
+          sessionId.length > 128 ||
+          !/^[A-Za-z0-9._:-]+$/.test(sessionId))
+      ) {
+        return res.status(400).json({ error: "invalid sessionId" });
       }
       const newSessionId = sessionId || `pqc_sess_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
       
@@ -280,16 +320,17 @@ app.post("/api/pqc/analyze-keys", (req, res) => {
 app.post("/api/ai/crypto-audit", async (req, res) => {
   try {
     const { codeOrConfig, systemName } = req.body;
-    if (typeof codeOrConfig !== "string" || codeOrConfig.length === 0 || codeOrConfig.length > 100000) {
-      return res.status(400).json({ error: "codeOrConfig must be a string of at most 100000 characters" });
+    if (typeof codeOrConfig !== "string" || codeOrConfig.length === 0 || codeOrConfig.length > 32000) {
+      return res.status(400).json({ error: "codeOrConfig must be a string of at most 32000 characters" });
     }
     if (systemName !== undefined && (typeof systemName !== "string" || systemName.length > 200)) {
       return res.status(400).json({ error: "systemName must be a string of at most 200 characters" });
     }
 
-    // If GEMINI_API_KEY is missing, return the offline fallback audit instead of an error so the endpoint works without paid API access.
-    if (!process.env.GEMINI_API_KEY) {
-      console.warn("GEMINI_API_KEY environment variable is missing — returning offline fallback audit.");
+    // A live provider call requires both an API key and an explicitly configured model.
+    // Otherwise, use the labeled offline heuristic instead of guessing a provider model.
+    if (!process.env.GEMINI_API_KEY || !process.env.GEMINI_MODEL) {
+      console.warn("Gemini key/model not fully configured — returning offline fallback audit.");
 
       const isRsaOrEcc = /RSA|ECDH|ECDSA|Secp|Prime|TLSv1\.2/i.test(codeOrConfig || "");
       const hasExplicitPqc = /ML-KEM|ML-DSA|SLH-DSA|FIPS 203|FIPS 204|FIPS 205/i.test(codeOrConfig || "");
@@ -362,11 +403,7 @@ Provide a structured response in valid JSON with these exact fields:
 Respond ONLY with valid JSON, no markdown code fence blocks surrounding the outer JSON.
 `;
 
-    // Attempt generation with fallback model aliases if high-demand/503 errors occur
-    const candidateModels = [
-      ...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []),
-      "gemini-flash-latest"
-    ];
+    const candidateModels = [process.env.GEMINI_MODEL];
     let lastError: any = null;
     let responseText: string | null = null;
 
@@ -403,6 +440,13 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
       }
 
       const auditData = JSON.parse(cleanedText.trim());
+      if (auditData && typeof auditData === "object") {
+        auditData.assessmentMode = "AI_ASSISTED_INTERNAL_REVIEW";
+        auditData.independentCertification = false;
+        if (auditData.riskLevel === "QUANTUM_SAFE") {
+          auditData.riskLevel = "REVIEW_REQUIRED";
+        }
+      }
       return res.json(auditData);
     }
 
@@ -446,8 +490,7 @@ Respond ONLY with valid JSON, no markdown code fence blocks surrounding the oute
   } catch (err: any) {
     console.error("Gemini AI Crypto Audit Error:", err);
     res.status(500).json({
-      error: "Failed to generate AI Cryptographic Audit",
-      details: err.message
+      error: "Failed to generate AI cryptographic assessment"
     });
   }
 });
