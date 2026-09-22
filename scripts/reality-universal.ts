@@ -139,7 +139,7 @@ gate(
   'Server handshake truth boundary',
   () => {
     const server = fs.readFileSync(path.resolve('server.ts'), 'utf8');
-    assert.ok(server.includes('placeholder PQ-shaped data'));
+    assert.ok(server.includes('Placeholder PQ-shaped data'));
     assert.ok(server.includes('NOT ML-KEM'));
     assert.ok(server.includes('PRODUCTION_BLOCKED_PLACEHOLDER_PQC'));
     assert.ok(server.includes('if (IS_PRODUCTION)'));
