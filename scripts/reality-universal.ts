@@ -141,9 +141,11 @@ gate(
     const server = fs.readFileSync(path.resolve('server.ts'), 'utf8');
     assert.ok(server.includes('placeholder PQ-shaped data'));
     assert.ok(server.includes('NOT ML-KEM'));
+    assert.ok(server.includes('PRODUCTION_BLOCKED_PLACEHOLDER_PQC'));
+    assert.ok(server.includes('if (IS_PRODUCTION)'));
     assert.ok(!server.includes('pqcStatus: "verified"'));
   },
-  'server continues to label its PQ-shaped handshake material as non-ML-KEM'
+  'server labels its PQ-shaped material as non-ML-KEM and blocks the placeholder handshake in production'
 );
 
 gate(
