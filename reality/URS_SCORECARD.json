@@ -1,79 +1,9 @@
 {
   "system": "QuantumShield",
-  "timestamp": "2026-09-07T11:08:25.263Z",
-  "gatesPassed": 10,
-  "totalGates": 10,
-  "score": 10,
-  "gates": [
-    {
-      "gate": 1,
-      "name": "Claim Freeze & Manifest Registration",
-      "passed": true,
-      "score": 1,
-      "details": "Audited Manifest: Registered 4 subsystems with explicit truth taxonomy"
-    },
-    {
-      "gate": 2,
-      "name": "Simulation Scanner in Cryptographic Code",
-      "passed": true,
-      "score": 1,
-      "details": "Zero Math.random() simulation detected in src/lib/pqcCrypto.ts"
-    },
-    {
-      "gate": 3,
-      "name": "NIST FIPS 204 ML-DSA-65 Keygen & Wire Invariants",
-      "passed": true,
-      "score": 1,
-      "details": "ML-DSA-65: Genuine pure-TS lattice keygen executed (1952B pk, 4032B sk)"
-    },
-    {
-      "gate": 4,
-      "name": "SHA-256 State Commitment Integrity",
-      "passed": true,
-      "score": 1,
-      "details": "Commitment derived: 09c4899d81074b37..."
-    },
-    {
-      "gate": 5,
-      "name": "Pure-TS ML-DSA-65 Signing & Tamper Rejection",
-      "passed": true,
-      "score": 1,
-      "details": "ML-DSA-65 Signature Verified (3309 bytes); Bit-flip tampering rejected"
-    },
-    {
-      "gate": 6,
-      "name": "Dual Hybrid Session Key Derivation & Conjunction",
-      "passed": true,
-      "score": 1,
-      "details": "Dual Hybrid Conjunction holds; Altered KEM material fails closed"
-    },
-    {
-      "gate": 7,
-      "name": "NIST FIPS 203 ML-KEM-768 & §7.3 Implicit Rejection",
-      "passed": true,
-      "score": 1,
-      "details": "ML-KEM-768 KEX converged (1184B pk, 1088B ct, 32B ss); FIPS 203 §7.3 leaks 0 oracle bits"
-    },
-    {
-      "gate": 8,
-      "name": "Gateway Architecture & Server Health",
-      "passed": true,
-      "score": 1,
-      "details": "Express API gateway & React client suite structure verified"
-    },
-    {
-      "gate": 9,
-      "name": "Reproducibility & NIST/RFC Test Vector Verification",
-      "passed": true,
-      "score": 1,
-      "details": "RFC 5869, SHA-256, FIPS 203 & FIPS 204 KAT invariants verified"
-    },
-    {
-      "gate": 10,
-      "name": "Multiplicative Reality & Universal 10/10 Law Calculation",
-      "passed": true,
-      "score": 1,
-      "details": "URS_10 = min(all_gates) * 10 = 10.0 / 10 (Internal Automated Gates)"
-    }
-  ]
+  "reportType": "STALE_SCORECARD_INVALIDATED",
+  "status": "REGENERATE_FROM_CURRENT_SOURCE",
+  "independentAudit": false,
+  "fipsValidatedModule": false,
+  "productionCertification": false,
+  "note": "The old numeric self-score was invalidated. Run npm run reality:universal to generate current repository-internal gate results."
 }
