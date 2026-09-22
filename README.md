@@ -1,25 +1,53 @@
 # QuantumShield
 
+Post-quantum migration research prototype combining a real application-layer ML-KEM/ML-DSA library integration with an intentionally limited server-side handshake demonstration.
+
 ## Reality-first status
 
-QuantumShield is a **post-quantum migration research prototype**. Its current checked-in server contains a real X25519 + HKDF path and a separately labeled placeholder PQ layer used to demonstrate architecture. Cryptographic production readiness requires a real reviewed ML-KEM implementation, reproducible tests, and independent review.
+**RESEARCH / PQC INTEGRATION PROTOTYPE — NOT CRYPTOGRAPHICALLY CERTIFIED OR PRODUCTION-READY**
 
-### What is verified in this repository
-- Node/Express server with `/api/health`, PQC handshake, benchmark and key-analysis endpoints.
-- X25519 key agreement and HKDF-SHA256 are implemented with Node `crypto`.
-- Gemini integration is server-side and activated only when `GEMINI_API_KEY` is configured.
-- Netlify build configuration is present for a Vite build and serverless API routing.
-- Firestore security rules and a security specification are included.
+QuantumShield currently has two distinct cryptographic surfaces that must not be conflated:
 
-### What is **not** claimed yet
-- The current PQC handshake is **not a verified ML-KEM-768 implementation**. The checked-in handshake currently uses generated placeholder ciphertext/shared-secret material for the ML-KEM portion and must not be represented as production ML-KEM.
-- QuantumShield does not provide proof of quantum-resistant security merely from its name or benchmark UI.
-- Benchmark timings and security-bit labels are informational until reproduced by a controlled benchmark suite.
-- A deployed Netlify site is not, by itself, evidence of cryptographic correctness.
+1. **Application/client library:** `src/lib/pqcCrypto.ts` uses `@noble/post-quantum` for ML-KEM-768 and ML-DSA-65, with repository tests for wire sizes, encapsulation/decapsulation, signing/verification, tamper rejection, HKDF and AES-GCM helpers.
+2. **Express server handshake:** `/api/pqc/handshake` currently performs real X25519 + HKDF-SHA256 but uses explicitly labeled random PQ-shaped placeholder material. It is **not** an ML-KEM server handshake.
+
+### What is evidenced
+
+- ML-KEM-768 application-layer integration through `@noble/post-quantum`
+- ML-DSA-65 application-layer integration through `@noble/post-quantum`
+- repository tests for selected wire/integration/adversarial properties
+- X25519 key agreement using Node `crypto`
+- RFC 5869 HKDF-SHA256 known-answer testing
+- AES-256-GCM browser helper code
+- Express API and React/Vite application
+- optional server-side Gemini integration
+- truth/config/release checks and locked npm dependencies
+
+### What is not claimed
+
+- FIPS validation of QuantumShield as a cryptographic module
+- independent cryptographic or application security audit
+- official NIST ACVP/KAT provenance for locally constructed ML-KEM/ML-DSA test seeds
+- Project Wycheproof corpus execution unless actual Wycheproof vectors are imported and identified
+- production ML-KEM on the current server handshake
+- whole-system “quantum safe” certification
+- real payment settlement, insured balances, grants, exchanges, or financial custody from demo screens
+- production deployment merely because a hosting workflow succeeds
+
+## Verification
+
+```bash
+npm ci
+npm test
+```
+
+The verification pipeline checks truth/configuration, cryptographic integration tests, the internal evidence gates, TypeScript and the production build.
+
+A green repository test proves the covered assertions only. It is not an independent certification.
 
 ## Secure configuration
 
-Copy `.env.example` to a local environment file. **Never commit real API keys or credentials.**
+Copy `.env.example` to `.env.local` and keep real credentials out of Git:
 
 ```env
 GEMINI_API_KEY=
@@ -28,49 +56,48 @@ APP_URL=http://localhost:3000
 PORT=3000
 ```
 
-Gemini is optional for the AI audit endpoint; without a key, the endpoint should clearly identify its response as an offline fallback rather than pretending an external model was used.
+Gemini is optional. If no key/model is configured, AI output must remain explicitly labeled as a fallback/demo path.
 
-## Local development
+## Server handshake boundary
 
-```bash
-npm install
-npm run lint
-npm run build
-npm run dev
-```
+The current server endpoint reports:
 
-## Current deployment status
+- real X25519 agreement when a valid client public key is supplied;
+- real HKDF-SHA256 derivation;
+- placeholder PQ-shaped data for architecture demonstration.
 
-The source repository can pass its CI and release gates independently of external hosting credentials. The GitHub Actions production deployment additionally requires a valid `NETLIFY_SITE_ID`; without that repository secret, deployment is intentionally stopped before contacting a Netlify site. This is an external configuration prerequisite, not evidence of a successful production deployment.
+The placeholder path must never be described as server-side ML-KEM. A production hybrid protocol should use a reviewed, interoperable ML-KEM implementation on both sides, authenticate the transcript, bind roles/context, define key confirmation and failure behavior, and undergo independent protocol review.
 
-## Deployment prerequisites
+## Demo/financial surfaces
 
-The GitHub deployment workflow requires repository secrets named:
+Payment, exchange, grant, token and wallet-like screens are demonstrations unless backed by an actual authorized provider/network integration. Generated local IDs or random receipt tags are not blockchain transaction hashes or cryptographic signatures.
 
-- `NETLIFY_AUTH_TOKEN`
-- `NETLIFY_SITE_ID`
+## AI migration assessment
 
-The repository code cannot safely infer or fabricate these credentials. Keep them in GitHub Actions secrets and never commit them to source control.
+The AI audit/report UI is an **internal migration-readiness assessment tool**, not an independent auditor, compliance certificate, NIST validation, or professional legal/security opinion.
 
-## Evidence gates
+## Deployment
 
-Before calling QuantumShield production-ready, the following must pass:
+GitHub deployment requires valid Netlify credentials in Actions secrets. A successful static/web deployment demonstrates hosting only; it does not demonstrate cryptographic production readiness.
 
-1. Reproducible dependency installation from the committed lockfile.
-2. Typecheck and production build.
-3. Real ML-KEM-768 key generation, encapsulation and decapsulation using a reviewed implementation or library.
-4. Known-answer/vector tests and negative/tamper tests.
-5. Hybrid X25519 + ML-KEM key agreement test proving both peers derive the same key.
-6. API integration and failure-path tests.
-7. Security-rule tests for Firestore.
-8. Independent review of cryptographic choices and parameter claims.
+## Security
 
-## Threat-model principles
+See [SECURITY.md](SECURITY.md) and [SECURITY_STATUS.md](SECURITY_STATUS.md).
 
-- Classical RSA/ECC exposure to Shor's algorithm must be described accurately and without speculative timelines being presented as facts.
-- “Post-quantum” means the relevant primitive and implementation have evidence; it is not a marketing label.
-- Simulations, placeholders and fallback responses must remain explicitly labeled.
+## Production-readiness gate
 
-## Security specification
+Before calling QuantumShield production-ready, require at minimum:
 
-See [`security_spec.md`](security_spec.md) for data invariants and negative security scenarios.
+1. real interoperable ML-KEM in the server protocol;
+2. authenticated transcript/key-confirmation design and protocol threat model;
+3. independent cryptographic/security review;
+4. official vector provenance where specific conformance claims are made;
+5. API authentication/authorization for sensitive operations;
+6. managed secrets and key lifecycle;
+7. monitoring, alerting, incident response and rollback;
+8. load/failure testing under a documented workload;
+9. deployment-specific privacy/compliance review.
+
+## License
+
+Use the repository's checked-in license terms.
