@@ -23,10 +23,10 @@ const tlsOptions = {
   rsaKeySize: 2048
 };`
   );
-  const [systemName, setSystemName] = useState('Production Microservice Infrastructure');
-  const [auditorName, setAuditorName] = useState('Dr. Alex Mercer, CISSP / CISA');
-  const [auditorOrg, setAuditorOrg] = useState('QuantumShield PQC Compliance Services');
-  const [auditorId, setAuditorId] = useState('AUD-PQC-2026-8841');
+  const [systemName, setSystemName] = useState('Example Microservice Environment');
+  const [auditorName, setAuditorName] = useState('Internal Demo Analyst');
+  const [auditorOrg, setAuditorOrg] = useState('QuantumShield Research Prototype');
+  const [auditorId, setAuditorId] = useState('INTERNAL-DEMO');
   const [isLoading, setIsLoading] = useState(false);
   const [auditResult, setAuditResult] = useState<SecurityAuditResult | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -141,8 +141,8 @@ QUANTUMSHIELD PQC READINESS ASSESSMENT
 Automated Post-Quantum Cryptography Readiness Report
 ================================================================================
 DATE: ${new Date().toUTCString()}
-AUDITOR: ${auditorName} (${auditorOrg})
-AUDITOR ID: ${auditorId}
+ANALYST LABEL: ${auditorName} (${auditorOrg})
+REPORT ID: ${auditorId}
 TARGET SYSTEM: ${systemName}
 
 1. EXECUTIVE COMPLIANCE SUMMARY:
@@ -556,24 +556,24 @@ ASSESSMENT NOTICE: INTERNAL AUTOMATED OUTPUT — NOT AN INDEPENDENT CERTIFICATIO
 
           <div className="bg-[#050505] p-5 border border-white/20 space-y-3">
             <h4 className="text-sm font-black text-white uppercase tracking-wider text-amber-400">
-              CNSA 2.0 TIMELINE MANDATES (US NATIONAL SECURITY SYSTEMS)
+              CNSA 2.0 MIGRATION REFERENCE — VERIFY CURRENT POLICY
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px]">
               <div className="p-3 bg-[#111111] border border-white/10">
-                <span className="text-amber-400 font-bold block">2025 TRANSITION</span>
-                <span className="text-white/70">Adopt PQC software & firmware signing.</span>
+                <span className="text-amber-400 font-bold block">POLICY REFERENCE</span>
+                <span className="text-white/70">Review current NSA/CNSA guidance for software and firmware signing migration.</span>
               </div>
               <div className="p-3 bg-[#111111] border border-white/10">
-                <span className="text-amber-400 font-bold block">2026 MANDATE</span>
-                <span className="text-white/70">Mandatory support for ML-KEM-768 in web proxies & VPNs.</span>
+                <span className="text-amber-400 font-bold block">POLICY REFERENCE</span>
+                <span className="text-white/70">Review current requirements for PQC-capable network security products.</span>
               </div>
               <div className="p-3 bg-[#111111] border border-white/10">
-                <span className="text-amber-400 font-bold block">2030 HARD CUTOFF</span>
-                <span className="text-white/70">Deprecate RSA-2048/3072, ECC, and DH completely.</span>
+                <span className="text-amber-400 font-bold block">POLICY REFERENCE</span>
+                <span className="text-white/70">Verify current transition/deprecation dates against authoritative guidance.</span>
               </div>
               <div className="p-3 bg-[#111111] border border-white/10">
-                <span className="text-emerald-400 font-bold block">2033 FINAL GOAL</span>
-                <span className="text-white/70">100% PQC-only across all defense & enterprise networks.</span>
+                <span className="text-emerald-400 font-bold block">POLICY REFERENCE</span>
+                <span className="text-white/70">Do not generalize national-security-system timelines to all enterprise networks.</span>
               </div>
             </div>
           </div>
@@ -585,10 +585,10 @@ ASSESSMENT NOTICE: INTERNAL AUTOMATED OUTPUT — NOT AN INDEPENDENT CERTIFICATIO
         <div className="bg-[#111111] border-2 border-amber-400/60 p-6 sm:p-8 space-y-6 font-mono text-xs">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-amber-400/40 pb-4 gap-4">
             <div>
-              <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest block">FORMAL AUDITOR CERTIFICATE</span>
+              <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest block">INTERNAL ASSESSMENT REPORT</span>
               <h3 className="text-2xl font-black text-white uppercase tracking-tight mt-1 flex items-center gap-2">
                 <Award className="w-6 h-6 text-amber-400" />
-                <span>OFFICIAL COMPLIANCE AUDIT CERTIFICATE</span>
+                <span>PQC MIGRATION READINESS ASSESSMENT</span>
               </h3>
             </div>
             <button
@@ -634,7 +634,7 @@ ASSESSMENT NOTICE: INTERNAL AUTOMATED OUTPUT — NOT AN INDEPENDENT CERTIFICATIO
           {/* Printable Certificate Frame */}
           <div className="bg-[#050505] border-4 border-amber-400/80 p-8 space-y-6 text-center relative overflow-hidden shadow-2xl">
             <div className="absolute top-3 left-3 text-[10px] text-amber-400 font-mono tracking-widest uppercase">
-              CONFIDENTIAL AUDIT SEAL // NIST FIPS 203
+              INTERNAL DEMO // NIST FIPS 203 REFERENCE
             </div>
             <div className="absolute bottom-3 right-3 text-[10px] text-amber-400 font-mono tracking-widest uppercase">
               ID: {auditorId}
@@ -643,10 +643,10 @@ ASSESSMENT NOTICE: INTERNAL AUTOMATED OUTPUT — NOT AN INDEPENDENT CERTIFICATIO
             <div className="space-y-2 pt-4">
               <ShieldCheck className="w-12 h-12 text-amber-400 mx-auto" />
               <h2 className="text-2xl font-black uppercase text-white tracking-widest">
-                CERTIFICATE OF PQC COMPLIANCE AUDIT
+                INTERNAL PQC READINESS REPORT
               </h2>
               <p className="text-xs text-white/60 uppercase tracking-wider font-mono">
-                ISSUED BY {auditorOrg.toUpperCase()}
+                GENERATED BY {auditorOrg.toUpperCase()}
               </p>
             </div>
 
@@ -660,13 +660,13 @@ ASSESSMENT NOTICE: INTERNAL AUTOMATED OUTPUT — NOT AN INDEPENDENT CERTIFICATIO
                 <strong className="text-emerald-400 text-sm font-bold block">{checklistCompliancePct}% ({completedCount}/{checklist.length} Passed)</strong>
               </div>
               <div>
-                <span className="text-[9px] text-amber-400 block font-bold">QUALIFIED AUDITOR:</span>
+                <span className="text-[9px] text-amber-400 block font-bold">ANALYST LABEL:</span>
                 <strong className="text-white text-sm font-bold block">{auditorName}</strong>
               </div>
             </div>
 
             <div className="space-y-2 text-left bg-[#111111] p-4 border border-white/10">
-              <span className="text-[10px] text-white/50 block font-bold uppercase">AUDITOR EXECUTIVE ATTESTATION:</span>
+              <span className="text-[10px] text-white/50 block font-bold uppercase">ASSESSMENT NOTICE:</span>
               <p className="text-xs text-slate-300 font-sans leading-relaxed">
                 This internal report records an automated post-quantum migration-readiness assessment for "{systemName}" against selected NIST FIPS 203 (ML-KEM) and CNSA 2.0 references under assessment ID {auditorId}. It is not an independent certification.
               </p>
